@@ -1,5 +1,6 @@
 import os, sys, glob
-from PIL import Image
+import PIL as pil
+from tkinter import *
 
 # Location of the image to be 'bordered' in the background tablet/phone shell
 # IMAGE_LOC[0] is horizontal x distance, IMAGE_LOC[1] is the vertical y distance,
@@ -24,7 +25,7 @@ def main(take_path_input=False, in_demo_folder=False):
     else:
         path = ASSET_PATH
 
-    bg_img = Image.open(BG_IMAGE_PATH)
+    bg_img = pil.Image.open(BG_IMAGE_PATH)
     bg_img.show()
 
     for subdir, dirs, files in os.walk(path):
@@ -33,9 +34,9 @@ def main(take_path_input=False, in_demo_folder=False):
                 new_path = os.path.join(subdir, file)
                 print(new_path)
                 
-                img = Image.open(new_path)
+                img = pil.Image.open(new_path)
                 bg_copy = bg_img.copy()
-                img_resize = img.resize((SCREEN_NEW_SIZE), Image.ANTIALIAS)
+                img_resize = img.resize((SCREEN_NEW_SIZE), pil.Image.ANTIALIAS)
                 bg_copy.paste(img_resize, IMAGE_LOC)
                 bg_copy.save(new_path)
                 print("Finished: " + new_path)
