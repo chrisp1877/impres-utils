@@ -1,0 +1,6 @@
+TODO.txt for Impresys
+
+* [ ] Build GUI frontend (Tkinter or Qt)
+* [ ] Build env variable gatherer from XML (.demo)
+* [ ] implement image inserter with gui
+* [ ] implement XML metadata update with image insert

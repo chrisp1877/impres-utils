@@ -38,7 +38,7 @@ def main(take_path_input=False, in_demo_folder=False):
                 bg_copy = bg_img.copy()
                 img_resize = img.resize((SCREEN_NEW_SIZE), Image.ANTIALIAS)
                 bg_copy.paste(img_resize, IMAGE_LOC)
-                bg_copy.save(new_path)
+                bg_copy.save(new_path, quality=100)
                 print("Finished: " + new_path)
                 
 
