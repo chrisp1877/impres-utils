@@ -43,6 +43,5 @@ def main(take_path_input=False, in_demo_folder=False):
                 
 
 
-
 if __name__ == '__main__':
     main()
