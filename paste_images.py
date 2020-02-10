@@ -1,6 +1,9 @@
 import os, sys, glob
 from PIL import Image
-# from tkinter import *
+
+'''
+
+'''
 
 # Location of the image to be 'bordered' in the background tablet/phone shell
 # IMAGE_LOC[0] is horizontal x distance, IMAGE_LOC[1] is the vertical y distance,
