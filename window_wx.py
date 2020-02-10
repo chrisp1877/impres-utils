@@ -14,15 +14,3 @@ class Frame(wx.Frame):
         if result == wx.ID_OK:
             self.Destroy()
 
-    '''
-        self.fg_locx_entry = Entry(Root)
-        self.fg_locy_entry = Entry(Root)
-        self.bg_locx_entry = Entry(Root)
-        self.bg_locy_entry = Entry(Root)
-        self.labelFrame = LabelFrame(self, text = "Open File")
-
-        self.fg_locx_entry.grid(row=0, column=0)
-        self.fg_locy_entry.grid(row=0, column=1)
-        self.bg_locx_entry.grid(row=0, column=0)
-        self.bg_locy_entry.grid(row=0, column=1)
-        '''
