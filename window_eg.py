@@ -46,6 +46,30 @@ else:
 image_vals = []
 image_props = multenterbox(image_msg, title="Enter image data:",  fields = image_fields, values=image_vals)
 
+def bulk_paste(assets_path: str, image_path: str, image_vals: list(int)):
+    '''
+    Usage: In script folder, open terminal and run python main.py {demo asset folder}
+    '''
+    path = assets_path
+    bg_img = Image.open(image_path)
+    bg_img.show()
+    new_image_size = (image_vals[2], image_vals[3])
+    fg_image_loc = (image_vals[0], image_vals[1])
+
+    for subdir, dirs, files in os.walk(path):
+        for file in files:
+            if file.endswith('.Png'):
+                new_path = os.path.join(subdir, file)
+                print(new_path)
+                
+                img = Image.open(new_path)
+                bg_copy = bg_img.copy()
+                img_resize = img.resize((new_image_size), Image.ANTIALIAS)
+                bg_copy.paste(img_resize, fg_image_loc)
+                bg_copy.save(new_path, quality=100)
+                print("Finished: " + new_path)
+
+        
 bulk_paste(assets, bg_img, image_props)
 
 msg_ex = "Do you want to continue?"
@@ -70,27 +94,3 @@ SCREEN_NEW_SIZE = (1438, 894) #size of screen after resize
 
 
 """
-
-
-def bulk_paste(assets_path: str, image_path: str, image_vals: list(int)):
-    '''
-    Usage: In script folder, open terminal and run python main.py {demo asset folder}
-    '''
-    path = assets_path
-    bg_img = Image.open(image_path)
-    bg_img.show()
-    new_image_size = (image_vals[2], image_vals[3])
-    fg_image_loc = (image_vals[0], image_vals[1])
-
-    for subdir, dirs, files in os.walk(path):
-        for file in files:
-            if file.endswith('.Png'):
-                new_path = os.path.join(subdir, file)
-                print(new_path)
-                
-                img = Image.open(new_path)
-                bg_copy = bg_img.copy()
-                img_resize = img.resize((new_image_size), Image.ANTIALIAS)
-                bg_copy.paste(img_resize, fg_image_loc)
-                bg_copy.save(new_path, quality=100)
-                print("Finished: " + new_path)
