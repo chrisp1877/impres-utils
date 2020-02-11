@@ -1,5 +1,6 @@
 import os, sys, glob
 from PIL import Image
+from typing import List
 # from tkinter import *
 
 # Location of the image to be 'bordered' in the background tablet/phone shell
