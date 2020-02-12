@@ -12,13 +12,15 @@ demo_LOC = r"C:\Users\impresys\Documents\Projects\impresys-utils-demo\cfs_final_
 def get_demo_meta(path):
     demo = ET.parse(path)
     root = demo.getroot()
-
     for chapters in root.findall('Chapters'):
-        sections = list(chapters) #--> list of "Chapter" elements with "Step"
+        print(dir(chapters))
+
+        '''
         for chapter in chapters.findall('Chapter'):
+            print(len(chapter))
             for step in chapter.findall('Step'):
-                print('test')
-    print(iter)
+                print(len(step))
+        '''
 
 def get_sections_with_tag(tag):
     pass
