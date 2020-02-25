@@ -7,7 +7,10 @@
 import xml.etree.ElementTree as ET
 from PIL import Image
 import sys
-
+#@TODO Include top <?xml version="1.0" encoding="utf-8"?> also doesn't include all
+# Demo tag attributes
+# need to edit mouse coordinates nested under StartPicture -> Hotspots -> Hotspot -> Mouse
+# EnterPicture -> MouseCoordinate, not just top level mousecoordinates
 
 def image_paste(demo_path, image_path, img_loc, img_size, typ='shell', sect='All'):
     # demo_path = vals[0]
@@ -33,6 +36,11 @@ def image_paste(demo_path, image_path, img_loc, img_size, typ='shell', sect='All
                 asset = step.find("ID").text
                 pfile = step.find("StartPicture").find("PictureFile").text
                 mouse_not_on = step.find("IsPointerSuppressed").text
+                # mouse_enter_pictures? = bool()
+                mouse_on = bool()
+                hl_boxes = bool()
+                jump_boxes = bool()
+                text_boxes = bool()
                 asset_dir =  step.find("StartPicture").find("AssetsDirectory").text
                 impath = demo_dir + '\\' + asset_dir + pfile
                 asset_img = Image.open(impath)
