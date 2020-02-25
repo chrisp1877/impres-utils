@@ -10,9 +10,6 @@ import sys
 
 
 def image_paste(demo_path, image_path, img_loc, img_size, typ='shell', sect='All'):
-
-
-
     # demo_path = vals[0]
     # img = Image.open(vals[1])
     # fg_img_size = (int(vals[4]), int(vals[5]))
@@ -35,7 +32,7 @@ def image_paste(demo_path, image_path, img_loc, img_size, typ='shell', sect='All
             for i, step in enumerate(steps):
                 asset = step.find("ID").text
                 pfile = step.find("StartPicture").find("PictureFile").text
-                mouse_not_on = bool(step.find("IsPointerSuppressed").text.capitalize())
+                mouse_not_on = step.find("IsPointerSuppressed").text
                 asset_dir =  step.find("StartPicture").find("AssetsDirectory").text
                 impath = demo_dir + '\\' + asset_dir + pfile
                 asset_img = Image.open(impath)
@@ -46,7 +43,7 @@ def image_paste(demo_path, image_path, img_loc, img_size, typ='shell', sect='All
                     hspot = step.find("StartPicture").find("Hotspots").find("Hotspot")
                     cby = (float(hspot.find("Top").text), float(hspot.find("Bottom").text))
                     cbx = (float(hspot.find("Left").text), float(hspot.find("Right").text))
-                    if not mouse_not_on:
+                    if not (cbx[1]-cbx[0]==bg_img_size[0] and cby[1]-cby[0]==bg_img_size[1]):
                         rx = float(fg_img_size[0] / bg_img_size[0])
                         ry = float(fg_img_size[1] / bg_img_size[1])
                         cloc_n = (str(cloc[0]*rx+fg_img_loc[0]), str(cloc[1]*ry+fg_img_loc[1]))
@@ -58,7 +55,7 @@ def image_paste(demo_path, image_path, img_loc, img_size, typ='shell', sect='All
                         step.find("StartPicture").find("Hotspots").find("Hotspot").find("Bottom").text = cby_n[1]
                         step.find("StartPicture").find("Hotspots").find("Hotspot").find("Left").text = cbx_n[0]
                         step.find("StartPicture").find("Hotspots").find("Hotspot").find("Left").text = cbx_n[1]
-                        print("SHIFTED: Mouse not on? " + str(mouse_not_on) +str(cloc, cby, cbx)+" to "+str(cloc_n, cby_n, cbx_n))
+                        print("SHIFTED:  "+str(cloc)+str(cby)+str(cbx)+" to "+str(cloc_n)+str(cby_n)+str(cbx_n))
                     else:
                         cbx_n, cby_n = cbx, cby
                         cloc_n = cloc
@@ -76,8 +73,8 @@ def image_paste(demo_path, image_path, img_loc, img_size, typ='shell', sect='All
     sys.exit(0)
 
 def main():
-    demo_path = r'C:\Users\impresys\Documents\Projects\impresys-utils\demos\AWS X-Ray [R1-V4].demo'
-    nimg_path = r'‪C:\Users\impresys\Pictures\bg.png'
+    demo_path = r"C:\Users\impresys\Documents\Projects\impresys-utils\demos\Deploy EMR Using Service Catalog [R1-V2].demo"
+    nimg_path = r"C:\Users\impresys\Pictures\bg.png"
     loc = (240,96)
     size = (1438, 894)
     typ = 'shell'
