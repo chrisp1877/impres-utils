@@ -22,22 +22,22 @@
             <PictureFile>Image_2.Png</PictureFile>
             <Time>2019-10-02T14:19:07.365503-07:00</Time>
             <MouseCoordinates>
-              <X>532.20555555555552</X>
-              <Y>582.82291666666663</Y>
+              <X>353</X>
+              <Y>650</Y>
             </MouseCoordinates>
             <AssetsDirectory>Manage Licenses Across Multiple AWS Accounts [R1-V4].demo_Assets\ff53d681-e528-48d8-858e-ed755edfe0b6\</AssetsDirectory>
             <Hotspots>
               <Hotspot>
-                <Top>564.09895833333326</Top>
-                <Bottom>601.546875</Bottom>
-                <Left>474.26111111111106</Left>
-                <Right>638.98888888888882</Right>
+                <Top>625</Top>
+                <Bottom>675</Bottom>
+                <Left>283</Left>
+                <Right>482</Right>
                 <MouseEnterPicture>
                   <PictureFile>Image_3.Png</PictureFile>
                   <Time>0001-01-01T00:00:00</Time>
                   <MouseCoordinates>
-                    <X>532.20555555555552</X>
-                    <Y>582.82291666666663</Y>
+                    <X>353</X>
+                    <Y>650</Y>
                   </MouseCoordinates>
                 </MouseEnterPicture>
               </Hotspot>
@@ -69,22 +69,22 @@
             <PictureFile>Image_5.Png</PictureFile>
             <Time>2019-10-02T14:19:17.1259786-07:00</Time>
             <MouseCoordinates>
-              <X>322.77777777777777</X>
-              <Y>377.60833333333329</Y>
+              <X>100</X>
+              <Y>376</Y>
             </MouseCoordinates>
             <AssetsDirectory>Manage Licenses Across Multiple AWS Accounts [R1-V4].demo_Assets\a72dc1b3-4672-4789-a9b7-74b552d76e5e\</AssetsDirectory>
             <Hotspots>
               <Hotspot>
-                <Top>358.884375</Top>
-                <Bottom>396.33229166666666</Bottom>
-                <Left>264.83333333333331</Left>
-                <Right>380.72222222222217</Right>
+                <Top>351</Top>
+                <Bottom>401</Bottom>
+                <Left>30</Left>
+                <Right>170</Right>
                 <MouseEnterPicture>
                   <PictureFile>Image_6.Png</PictureFile>
                   <Time>0001-01-01T00:00:00</Time>
                   <MouseCoordinates>
-                    <X>322.77777777777777</X>
-                    <Y>377.60833333333329</Y>
+                    <X>100</X>
+                    <Y>376</Y>
                   </MouseCoordinates>
                 </MouseEnterPicture>
               </Hotspot>
@@ -116,22 +116,22 @@
             <PictureFile>Image_8.Png</PictureFile>
             <Time>2019-10-02T14:19:26.425752-07:00</Time>
             <MouseCoordinates>
-              <X>1699.7289570066393</X>
-              <Y>299.05830877816953</Y>
+              <X>1763.4309547731216</X>
+              <Y>271.12096860506642</Y>
             </MouseCoordinates>
             <AssetsDirectory>Manage Licenses Across Multiple AWS Accounts [R1-V4].demo_Assets\54e4e560-1552-4641-96d8-03b8c849c5d8\</AssetsDirectory>
             <Hotspots>
               <Hotspot>
-                <Top>271.25625</Top>
-                <Bottom>308.70416666666665</Bottom>
-                <Left>1634.8055555555554</Left>
-                <Right>1750.6944444444443</Right>
+                <Top>234</Top>
+                <Bottom>284</Bottom>
+                <Left>1685</Left>
+                <Right>1825</Right>
                 <MouseEnterPicture>
                   <PictureFile>Image_9.Png</PictureFile>
                   <Time>0001-01-01T00:00:00</Time>
                   <MouseCoordinates>
-                    <X>1692.75</X>
-                    <Y>284.73749999999995</Y>
+                    <X>1755</X>
+                    <Y>252</Y>
                   </MouseCoordinates>
                 </MouseEnterPicture>
               </Hotspot>
@@ -163,22 +163,22 @@
             <PictureFile>Image_13.Png</PictureFile>
             <Time>2019-10-02T14:20:31.5761635-07:00</Time>
             <MouseCoordinates>
-              <X>598.42777777777769</X>
-              <Y>110.97916666666667</Y>
+              <X>433</X>
+              <Y>20</Y>
             </MouseCoordinates>
             <AssetsDirectory>Manage Licenses Across Multiple AWS Accounts [R1-V4].demo_Assets\505faa05-0e58-43ad-bd19-a9f03bef946b\</AssetsDirectory>
             <Hotspots>
               <Hotspot>
-                <Top>96</Top>
-                <Bottom>133.44791666666666</Bottom>
-                <Left>540.48333333333335</Left>
-                <Right>656.37222222222226</Right>
+                <Top>0</Top>
+                <Bottom>50</Bottom>
+                <Left>363</Left>
+                <Right>503</Right>
                 <MouseEnterPicture>
                   <PictureFile>Image_16.Png</PictureFile>
                   <Time>0001-01-01T00:00:00</Time>
                   <MouseCoordinates>
-                    <X>598.42777777777769</X>
-                    <Y>110.97916666666667</Y>
+                    <X>433</X>
+                    <Y>20</Y>
                   </MouseCoordinates>
                 </MouseEnterPicture>
               </Hotspot>
@@ -210,22 +210,22 @@
             <PictureFile>Image_2.Png</PictureFile>
             <Time>2019-10-02T14:22:21.2616479-07:00</Time>
             <MouseCoordinates>
-              <X>310.36111111111109</X>
-              <Y>361.13124999999997</Y>
+              <X>85</X>
+              <Y>354</Y>
             </MouseCoordinates>
             <AssetsDirectory>Manage Licenses Across Multiple AWS Accounts [R1-V4].demo_Assets\a11004d8-878f-44e8-a8dd-5b7348875222\</AssetsDirectory>
             <Hotspots>
               <Hotspot>
-                <Top>342.40729166666665</Top>
-                <Bottom>379.85520833333334</Bottom>
-                <Left>252.41666666666666</Left>
-                <Right>368.30555555555554</Right>
+                <Top>329</Top>
+                <Bottom>379</Bottom>
+                <Left>15</Left>
+                <Right>155</Right>
                 <MouseEnterPicture>
                   <PictureFile>Image_4.Png</PictureFile>
                   <Time>0001-01-01T00:00:00</Time>
                   <MouseCoordinates>
-                    <X>310.36111111111109</X>
-                    <Y>361.13124999999997</Y>
+                    <X>85</X>
+                    <Y>354</Y>
                   </MouseCoordinates>
                 </MouseEnterPicture>
               </Hotspot>
@@ -267,22 +267,22 @@
             <PictureFile>Image_6.Png</PictureFile>
             <Time>2019-10-02T14:22:28.9247244-07:00</Time>
             <MouseCoordinates>
-              <X>848.41666666666663</X>
-              <Y>446.5125</Y>
+              <X>735</X>
+              <Y>468</Y>
             </MouseCoordinates>
             <AssetsDirectory>Manage Licenses Across Multiple AWS Accounts [R1-V4].demo_Assets\395df1c3-1b2b-4a5f-91b0-c4ee41a7ad94\</AssetsDirectory>
             <Hotspots>
               <Hotspot>
-                <Top>427.78854166666662</Top>
-                <Bottom>465.2364583333333</Bottom>
-                <Left>790.47222222222217</Left>
-                <Right>906.36111111111109</Right>
+                <Top>443</Top>
+                <Bottom>493</Bottom>
+                <Left>665</Left>
+                <Right>805</Right>
                 <MouseEnterPicture>
                   <PictureFile>Image_7.Png</PictureFile>
                   <Time>0001-01-01T00:00:00</Time>
                   <MouseCoordinates>
-                    <X>848.41666666666663</X>
-                    <Y>446.5125</Y>
+                    <X>735</X>
+                    <Y>468</Y>
                   </MouseCoordinates>
                 </MouseEnterPicture>
               </Hotspot>
@@ -314,22 +314,22 @@
             <PictureFile>Image_10.Png</PictureFile>
             <Time>2019-10-02T14:22:38.7257416-07:00</Time>
             <MouseCoordinates>
-              <X>875.73333333333335</X>
-              <Y>586.56770833333326</Y>
+              <X>768</X>
+              <Y>655</Y>
             </MouseCoordinates>
             <AssetsDirectory>Manage Licenses Across Multiple AWS Accounts [R1-V4].demo_Assets\f89d6c37-c967-4f92-85cb-f87f28352439\</AssetsDirectory>
             <Hotspots>
               <Hotspot>
-                <Top>567.84375</Top>
-                <Bottom>605.29166666666663</Bottom>
-                <Left>817.78888888888889</Left>
-                <Right>933.67777777777769</Right>
+                <Top>630</Top>
+                <Bottom>680</Bottom>
+                <Left>698</Left>
+                <Right>838</Right>
                 <MouseEnterPicture>
                   <PictureFile>Image_11.Png</PictureFile>
                   <Time>0001-01-01T00:00:00</Time>
                   <MouseCoordinates>
-                    <X>875.73333333333335</X>
-                    <Y>586.56770833333326</Y>
+                    <X>768</X>
+                    <Y>655</Y>
                   </MouseCoordinates>
                 </MouseEnterPicture>
               </Hotspot>
@@ -361,22 +361,22 @@
             <PictureFile>Image_12.Png</PictureFile>
             <Time>2019-10-02T14:22:49.3096197-07:00</Time>
             <MouseCoordinates>
-              <X>1812.7777777777776</X>
-              <Y>731.86562499999991</Y>
+              <X>1900</X>
+              <Y>849</Y>
             </MouseCoordinates>
             <AssetsDirectory>Manage Licenses Across Multiple AWS Accounts [R1-V4].demo_Assets\899dd099-cb54-4a61-8c02-1c0f55b594d3\</AssetsDirectory>
             <Hotspots>
               <Hotspot>
-                <Top>713.14166666666665</Top>
-                <Bottom>750.58958333333328</Bottom>
-                <Left>1754.8333333333333</Left>
-                <Right>1870.7222222222222</Right>
+                <Top>824</Top>
+                <Bottom>874</Bottom>
+                <Left>1830</Left>
+                <Right>1970</Right>
                 <MouseEnterPicture>
                   <PictureFile>Image_13.Png</PictureFile>
                   <Time>0001-01-01T00:00:00</Time>
                   <MouseCoordinates>
-                    <X>1812.7777777777776</X>
-                    <Y>731.86562499999991</Y>
+                    <X>1900</X>
+                    <Y>849</Y>
                   </MouseCoordinates>
                 </MouseEnterPicture>
               </Hotspot>
@@ -603,22 +603,22 @@
             <PictureFile>Image_20.Png</PictureFile>
             <Time>2019-10-02T14:23:07.358392-07:00</Time>
             <MouseCoordinates>
-              <X>1171.25</X>
-              <Y>800.76979166666661</Y>
+              <X>1125</X>
+              <Y>941</Y>
             </MouseCoordinates>
             <AssetsDirectory>Manage Licenses Across Multiple AWS Accounts [R1-V4].demo_Assets\1b44c6d8-7296-464f-b437-7a1ba52f6a3e\</AssetsDirectory>
             <Hotspots>
               <Hotspot>
-                <Top>782.04583333333323</Top>
-                <Bottom>819.49375</Bottom>
-                <Left>1113.3055555555557</Left>
-                <Right>1229.1944444444443</Right>
+                <Top>916</Top>
+                <Bottom>966</Bottom>
+                <Left>1055</Left>
+                <Right>1195</Right>
                 <MouseEnterPicture>
                   <PictureFile>Image_21.Png</PictureFile>
                   <Time>0001-01-01T00:00:00</Time>
                   <MouseCoordinates>
-                    <X>1171.25</X>
-                    <Y>800.76979166666661</Y>
+                    <X>1125</X>
+                    <Y>941</Y>
                   </MouseCoordinates>
                 </MouseEnterPicture>
               </Hotspot>
@@ -660,22 +660,22 @@
             <PictureFile>Image_3.Png</PictureFile>
             <Time>2019-10-02T14:24:13.2583038-07:00</Time>
             <MouseCoordinates>
-              <X>336.85</X>
-              <Y>152.92083333333332</Y>
+              <X>117</X>
+              <Y>76</Y>
             </MouseCoordinates>
             <AssetsDirectory>Manage Licenses Across Multiple AWS Accounts [R1-V4].demo_Assets\2eadf20c-6235-4ed0-b9eb-c3adaa85319b\</AssetsDirectory>
             <Hotspots>
               <Hotspot>
-                <Top>134.196875</Top>
-                <Bottom>171.64479166666666</Bottom>
-                <Left>278.90555555555557</Left>
-                <Right>394.79444444444442</Right>
+                <Top>51</Top>
+                <Bottom>101</Bottom>
+                <Left>47</Left>
+                <Right>187</Right>
                 <MouseEnterPicture>
                   <PictureFile>Image_4.Png</PictureFile>
                   <Time>0001-01-01T00:00:00</Time>
                   <MouseCoordinates>
-                    <X>336.85</X>
-                    <Y>152.92083333333332</Y>
+                    <X>117</X>
+                    <Y>76</Y>
                   </MouseCoordinates>
                 </MouseEnterPicture>
               </Hotspot>
@@ -707,22 +707,22 @@
             <PictureFile>Image_7.Png</PictureFile>
             <Time>2019-10-02T14:24:24.6070805-07:00</Time>
             <MouseCoordinates>
-              <X>327.74444444444441</X>
-              <Y>293.725</Y>
+              <X>106</X>
+              <Y>264</Y>
             </MouseCoordinates>
             <AssetsDirectory>Manage Licenses Across Multiple AWS Accounts [R1-V4].demo_Assets\22ac1b43-dbfc-4ee5-9d02-42786251f231\</AssetsDirectory>
             <Hotspots>
               <Hotspot>
-                <Top>275.00104166666665</Top>
-                <Bottom>312.44895833333328</Bottom>
-                <Left>269.8</Left>
-                <Right>385.68888888888887</Right>
+                <Top>239</Top>
+                <Bottom>289</Bottom>
+                <Left>36</Left>
+                <Right>176</Right>
                 <MouseEnterPicture>
                   <PictureFile>Image_9.Png</PictureFile>
                   <Time>0001-01-01T00:00:00</Time>
                   <MouseCoordinates>
-                    <X>327.74444444444441</X>
-                    <Y>293.725</Y>
+                    <X>106</X>
+                    <Y>264</Y>
                   </MouseCoordinates>
                 </MouseEnterPicture>
               </Hotspot>
@@ -764,22 +764,22 @@
             <PictureFile>Image_18.Png</PictureFile>
             <Time>2019-10-02T14:24:51.0913924-07:00</Time>
             <MouseCoordinates>
-              <X>417.97222222222217</X>
-              <Y>110.97916666666667</Y>
+              <X>215</X>
+              <Y>20</Y>
             </MouseCoordinates>
             <AssetsDirectory>Manage Licenses Across Multiple AWS Accounts [R1-V4].demo_Assets\3aca314e-9b30-41c3-87ae-c54cf5625baa\</AssetsDirectory>
             <Hotspots>
               <Hotspot>
-                <Top>96</Top>
-                <Bottom>133.44791666666666</Bottom>
-                <Left>360.02777777777777</Left>
-                <Right>475.91666666666663</Right>
+                <Top>0</Top>
+                <Bottom>50</Bottom>
+                <Left>145</Left>
+                <Right>285</Right>
                 <MouseEnterPicture>
                   <PictureFile>Image_19.Png</PictureFile>
                   <Time>0001-01-01T00:00:00</Time>
                   <MouseCoordinates>
-                    <X>417.97222222222217</X>
-                    <Y>110.97916666666667</Y>
+                    <X>215</X>
+                    <Y>20</Y>
                   </MouseCoordinates>
                 </MouseEnterPicture>
               </Hotspot>
@@ -899,22 +899,22 @@
             <PictureFile>Image_27.Png</PictureFile>
             <Time>2019-10-02T14:25:48.5262449-07:00</Time>
             <MouseCoordinates>
-              <X>1772.2166666666665</X>
-              <Y>633.7520833333333</Y>
+              <X>1851</X>
+              <Y>718</Y>
             </MouseCoordinates>
             <AssetsDirectory>Manage Licenses Across Multiple AWS Accounts [R1-V4].demo_Assets\719b3730-7913-4bc4-830d-5f7a43bb82e8\</AssetsDirectory>
             <Hotspots>
               <Hotspot>
-                <Top>615.02812499999993</Top>
-                <Bottom>652.47604166666667</Bottom>
-                <Left>1714.2722222222221</Left>
-                <Right>1830.161111111111</Right>
+                <Top>693</Top>
+                <Bottom>743</Bottom>
+                <Left>1781</Left>
+                <Right>1921</Right>
                 <MouseEnterPicture>
                   <PictureFile>Image_28.Png</PictureFile>
                   <Time>0001-01-01T00:00:00</Time>
                   <MouseCoordinates>
-                    <X>1772.2166666666665</X>
-                    <Y>633.7520833333333</Y>
+                    <X>1851</X>
+                    <Y>718</Y>
                   </MouseCoordinates>
                 </MouseEnterPicture>
               </Hotspot>
@@ -1385,22 +1385,22 @@
             <PictureFile>Image_42.Png</PictureFile>
             <Time>2019-10-02T14:26:25.1097554-07:00</Time>
             <MouseCoordinates>
-              <X>1694.4055555555556</X>
-              <Y>819.49375</Y>
+              <X>1757</X>
+              <Y>966</Y>
             </MouseCoordinates>
             <AssetsDirectory>Manage Licenses Across Multiple AWS Accounts [R1-V4].demo_Assets\3a1e73e1-4a8d-41e4-820d-64a8d46872ab\</AssetsDirectory>
             <Hotspots>
               <Hotspot>
-                <Top>800.76979166666661</Top>
-                <Bottom>838.21770833333323</Bottom>
-                <Left>1636.461111111111</Left>
-                <Right>1752.35</Right>
+                <Top>941</Top>
+                <Bottom>991</Bottom>
+                <Left>1687</Left>
+                <Right>1827</Right>
                 <MouseEnterPicture>
                   <PictureFile>Image_43.Png</PictureFile>
                   <Time>0001-01-01T00:00:00</Time>
                   <MouseCoordinates>
-                    <X>1694.4055555555556</X>
-                    <Y>819.49375</Y>
+                    <X>1757</X>
+                    <Y>966</Y>
                   </MouseCoordinates>
                 </MouseEnterPicture>
               </Hotspot>
@@ -2193,22 +2193,22 @@
             <PictureFile>Image_64.Png</PictureFile>
             <Time>2019-10-02T14:27:18.8752188-07:00</Time>
             <MouseCoordinates>
-              <X>355.06111111111113</X>
-              <Y>357.38645833333334</Y>
+              <X>139</X>
+              <Y>349</Y>
             </MouseCoordinates>
             <AssetsDirectory>Manage Licenses Across Multiple AWS Accounts [R1-V4].demo_Assets\5da8be1b-76af-4817-bf90-fba0fc98574e\</AssetsDirectory>
             <Hotspots>
               <Hotspot>
-                <Top>338.6625</Top>
-                <Bottom>376.11041666666665</Bottom>
-                <Left>297.11666666666667</Left>
-                <Right>413.00555555555553</Right>
+                <Top>324</Top>
+                <Bottom>374</Bottom>
+                <Left>69</Left>
+                <Right>209</Right>
                 <MouseEnterPicture>
                   <PictureFile>Image_65.Png</PictureFile>
                   <Time>0001-01-01T00:00:00</Time>
                   <MouseCoordinates>
-                    <X>355.06111111111113</X>
-                    <Y>357.38645833333334</Y>
+                    <X>139</X>
+                    <Y>349</Y>
                   </MouseCoordinates>
                 </MouseEnterPicture>
               </Hotspot>
@@ -2289,22 +2289,22 @@
             <PictureFile>Image_12.Png</PictureFile>
             <Time>2019-10-03T13:48:29.8452155-07:00</Time>
             <MouseCoordinates>
-              <X>692.79444444444448</X>
-              <Y>425.54166666666663</Y>
+              <X>547</X>
+              <Y>440</Y>
             </MouseCoordinates>
             <AssetsDirectory>Manage Licenses Across Multiple AWS Accounts [R1-V4].demo_Assets\f59c6891-25a1-4987-b1c3-8f7e62c954d8\</AssetsDirectory>
             <Hotspots>
               <Hotspot>
-                <Top>406.81770833333331</Top>
-                <Bottom>444.265625</Bottom>
-                <Left>634.84999999999991</Left>
-                <Right>750.73888888888882</Right>
+                <Top>415</Top>
+                <Bottom>465</Bottom>
+                <Left>477</Left>
+                <Right>617</Right>
                 <MouseEnterPicture>
                   <PictureFile>Image_13.Png</PictureFile>
                   <Time>0001-01-01T00:00:00</Time>
                   <MouseCoordinates>
-                    <X>692.79444444444448</X>
-                    <Y>425.54166666666663</Y>
+                    <X>547</X>
+                    <Y>440</Y>
                   </MouseCoordinates>
                 </MouseEnterPicture>
               </Hotspot>
@@ -2336,22 +2336,22 @@
             <PictureFile>Image_15.Png</PictureFile>
             <Time>2019-10-03T13:48:33.4112549-07:00</Time>
             <MouseCoordinates>
-              <X>669.61666666666656</X>
-              <Y>397.8302083333333</Y>
+              <X>519</X>
+              <Y>403</Y>
             </MouseCoordinates>
             <AssetsDirectory>Manage Licenses Across Multiple AWS Accounts [R1-V4].demo_Assets\c9145a4c-0661-4c37-964a-95f2d1d4e45f\</AssetsDirectory>
             <Hotspots>
               <Hotspot>
-                <Top>379.10625</Top>
-                <Bottom>416.55416666666662</Bottom>
-                <Left>611.67222222222222</Left>
-                <Right>727.56111111111113</Right>
+                <Top>378</Top>
+                <Bottom>428</Bottom>
+                <Left>449</Left>
+                <Right>589</Right>
                 <MouseEnterPicture>
                   <PictureFile>Image_16.Png</PictureFile>
                   <Time>0001-01-01T00:00:00</Time>
                   <MouseCoordinates>
-                    <X>669.61666666666656</X>
-                    <Y>397.8302083333333</Y>
+                    <X>519</X>
+                    <Y>403</Y>
                   </MouseCoordinates>
                 </MouseEnterPicture>
               </Hotspot>
@@ -2549,22 +2549,22 @@
             <PictureFile>Image_24.Png</PictureFile>
             <Time>2019-10-03T13:48:59.7920752-07:00</Time>
             <MouseCoordinates>
-              <X>1688.6111111111111</X>
-              <Y>307.20624999999995</Y>
+              <X>1750</X>
+              <Y>282</Y>
             </MouseCoordinates>
             <AssetsDirectory>Manage Licenses Across Multiple AWS Accounts [R1-V4].demo_Assets\29cfe662-fb49-4bc3-9d44-b69c37d42119\</AssetsDirectory>
             <Hotspots>
               <Hotspot>
-                <Top>288.48229166666664</Top>
-                <Bottom>325.93020833333333</Bottom>
-                <Left>1630.6666666666665</Left>
-                <Right>1746.5555555555554</Right>
+                <Top>257</Top>
+                <Bottom>307</Bottom>
+                <Left>1680</Left>
+                <Right>1820</Right>
                 <MouseEnterPicture>
                   <PictureFile>Image_25.Png</PictureFile>
                   <Time>0001-01-01T00:00:00</Time>
                   <MouseCoordinates>
-                    <X>1688.6111111111111</X>
-                    <Y>307.20624999999995</Y>
+                    <X>1750</X>
+                    <Y>282</Y>
                   </MouseCoordinates>
                 </MouseEnterPicture>
               </Hotspot>
@@ -2645,22 +2645,22 @@
             <PictureFile>Image_29.Png</PictureFile>
             <Time>2019-10-03T13:49:09.9626948-07:00</Time>
             <MouseCoordinates>
-              <X>864.97222222222217</X>
-              <Y>536.3875</Y>
+              <X>755</X>
+              <Y>588</Y>
             </MouseCoordinates>
             <AssetsDirectory>Manage Licenses Across Multiple AWS Accounts [R1-V4].demo_Assets\25f3fc01-48ec-4fee-8d0f-cdf7bc0afebc\</AssetsDirectory>
             <Hotspots>
               <Hotspot>
-                <Top>517.66354166666656</Top>
-                <Bottom>555.1114583333333</Bottom>
-                <Left>807.02777777777771</Left>
-                <Right>922.91666666666663</Right>
+                <Top>563</Top>
+                <Bottom>613</Bottom>
+                <Left>685</Left>
+                <Right>825</Right>
                 <MouseEnterPicture>
                   <PictureFile>Image_31.Png</PictureFile>
                   <Time>0001-01-01T00:00:00</Time>
                   <MouseCoordinates>
-                    <X>864.97222222222217</X>
-                    <Y>536.3875</Y>
+                    <X>755</X>
+                    <Y>588</Y>
                   </MouseCoordinates>
                 </MouseEnterPicture>
               </Hotspot>
@@ -2731,22 +2731,22 @@
             <PictureFile>Image_33.Png</PictureFile>
             <Time>2019-10-03T13:49:16.5093517-07:00</Time>
             <MouseCoordinates>
-              <X>1275.55</X>
-              <Y>512.42083333333335</Y>
+              <X>1251</X>
+              <Y>556</Y>
             </MouseCoordinates>
             <AssetsDirectory>Manage Licenses Across Multiple AWS Accounts [R1-V4].demo_Assets\e569753b-c2f3-431c-8c60-5f7b9f003bd0\</AssetsDirectory>
             <Hotspots>
               <Hotspot>
-                <Top>493.696875</Top>
-                <Bottom>531.14479166666661</Bottom>
-                <Left>1217.6055555555554</Left>
-                <Right>1333.4944444444443</Right>
+                <Top>531</Top>
+                <Bottom>581</Bottom>
+                <Left>1181</Left>
+                <Right>1321</Right>
                 <MouseEnterPicture>
                   <PictureFile>Image_34.Png</PictureFile>
                   <Time>0001-01-01T00:00:00</Time>
                   <MouseCoordinates>
-                    <X>1275.55</X>
-                    <Y>512.42083333333335</Y>
+                    <X>1251</X>
+                    <Y>556</Y>
                   </MouseCoordinates>
                 </MouseEnterPicture>
               </Hotspot>
@@ -2788,22 +2788,22 @@
             <PictureFile>Image_38.Png</PictureFile>
             <Time>2019-10-03T13:49:45.1966724-07:00</Time>
             <MouseCoordinates>
-              <X>425.42222222222222</X>
-              <Y>327.428125</Y>
+              <X>224</X>
+              <Y>309</Y>
             </MouseCoordinates>
             <AssetsDirectory>Manage Licenses Across Multiple AWS Accounts [R1-V4].demo_Assets\4ff59180-d3d7-4837-a191-2cbd70a5bda8\</AssetsDirectory>
             <Hotspots>
               <Hotspot>
-                <Top>308.70416666666665</Top>
-                <Bottom>346.15208333333328</Bottom>
-                <Left>367.47777777777776</Left>
-                <Right>483.36666666666667</Right>
+                <Top>284</Top>
+                <Bottom>334</Bottom>
+                <Left>154</Left>
+                <Right>294</Right>
                 <MouseEnterPicture>
                   <PictureFile>Image_39.Png</PictureFile>
                   <Time>0001-01-01T00:00:00</Time>
                   <MouseCoordinates>
-                    <X>425.42222222222222</X>
-                    <Y>327.428125</Y>
+                    <X>224</X>
+                    <Y>309</Y>
                   </MouseCoordinates>
                 </MouseEnterPicture>
               </Hotspot>
@@ -2835,22 +2835,22 @@
             <PictureFile>Image_41.Png</PictureFile>
             <Time>2019-10-03T13:49:57.14394-07:00</Time>
             <MouseCoordinates>
-              <X>764.78334938556793</X>
-              <Y>533.93000589961594</Y>
+              <X>590</X>
+              <Y>523</Y>
             </MouseCoordinates>
             <AssetsDirectory>Manage Licenses Across Multiple AWS Accounts [R1-V4].demo_Assets\4ed2f3a5-c378-46ab-9110-df2efd158c3b\</AssetsDirectory>
             <Hotspots>
               <Hotspot>
-                <Top>501</Top>
-                <Bottom>569</Bottom>
-                <Left>586</Left>
-                <Right>870</Right>
+                <Top>498</Top>
+                <Bottom>548</Bottom>
+                <Left>520</Left>
+                <Right>660</Right>
                 <MouseEnterPicture>
                   <PictureFile>Image_42.Png</PictureFile>
                   <Time>0001-01-01T00:00:00</Time>
                   <MouseCoordinates>
-                    <X>728.38888888888891</X>
-                    <Y>487.7052083333333</Y>
+                    <X>590</X>
+                    <Y>523</Y>
                   </MouseCoordinates>
                 </MouseEnterPicture>
               </Hotspot>
@@ -2892,22 +2892,22 @@
             <PictureFile>Image_46.Png</PictureFile>
             <Time>2019-10-03T13:51:51.4099777-07:00</Time>
             <MouseCoordinates>
-              <X>383.20555555555552</X>
-              <Y>358.13541666666663</Y>
+              <X>173</X>
+              <Y>350</Y>
             </MouseCoordinates>
             <AssetsDirectory>Manage Licenses Across Multiple AWS Accounts [R1-V4].demo_Assets\c858076c-c053-4e2f-ab05-6828094e7885\</AssetsDirectory>
             <Hotspots>
               <Hotspot>
-                <Top>339.41145833333331</Top>
-                <Bottom>376.859375</Bottom>
-                <Left>325.26111111111112</Left>
-                <Right>441.15</Right>
+                <Top>325</Top>
+                <Bottom>375</Bottom>
+                <Left>103</Left>
+                <Right>243</Right>
                 <MouseEnterPicture>
                   <PictureFile>Image_47.Png</PictureFile>
                   <Time>0001-01-01T00:00:00</Time>
                   <MouseCoordinates>
-                    <X>383.20555555555552</X>
-                    <Y>358.13541666666663</Y>
+                    <X>173</X>
+                    <Y>350</Y>
                   </MouseCoordinates>
                 </MouseEnterPicture>
               </Hotspot>
@@ -2988,22 +2988,22 @@
             <PictureFile>Image_4.Png</PictureFile>
             <Time>2019-10-03T14:26:12.5946869-07:00</Time>
             <MouseCoordinates>
-              <X>712.661111111111</X>
-              <Y>430.78437499999995</Y>
+              <X>571</X>
+              <Y>447</Y>
             </MouseCoordinates>
             <AssetsDirectory>Manage Licenses Across Multiple AWS Accounts [R1-V4].demo_Assets\66604041-2d8d-4da9-baa2-4c0153b5e0a7\</AssetsDirectory>
             <Hotspots>
               <Hotspot>
-                <Top>412.06041666666664</Top>
-                <Bottom>449.50833333333333</Bottom>
-                <Left>654.7166666666667</Left>
-                <Right>770.6055555555555</Right>
+                <Top>422</Top>
+                <Bottom>472</Bottom>
+                <Left>501</Left>
+                <Right>641</Right>
                 <MouseEnterPicture>
                   <PictureFile>Image_5.Png</PictureFile>
                   <Time>0001-01-01T00:00:00</Time>
                   <MouseCoordinates>
-                    <X>712.661111111111</X>
-                    <Y>430.78437499999995</Y>
+                    <X>571</X>
+                    <Y>447</Y>
                   </MouseCoordinates>
                 </MouseEnterPicture>
               </Hotspot>
@@ -3035,22 +3035,22 @@
             <PictureFile>Image_7.Png</PictureFile>
             <Time>2019-10-03T14:26:20.3275111-07:00</Time>
             <MouseCoordinates>
-              <X>660.51111111111106</X>
-              <Y>397.08124999999995</Y>
+              <X>508</X>
+              <Y>402</Y>
             </MouseCoordinates>
             <AssetsDirectory>Manage Licenses Across Multiple AWS Accounts [R1-V4].demo_Assets\e44f19da-a1db-4d3f-aacd-2eb5a580ab79\</AssetsDirectory>
             <Hotspots>
               <Hotspot>
-                <Top>378.35729166666664</Top>
-                <Bottom>415.80520833333333</Bottom>
-                <Left>602.56666666666661</Left>
-                <Right>718.45555555555552</Right>
+                <Top>377</Top>
+                <Bottom>427</Bottom>
+                <Left>438</Left>
+                <Right>578</Right>
                 <MouseEnterPicture>
                   <PictureFile>Image_8.Png</PictureFile>
                   <Time>0001-01-01T00:00:00</Time>
                   <MouseCoordinates>
-                    <X>660.51111111111106</X>
-                    <Y>397.08124999999995</Y>
+                    <X>508</X>
+                    <Y>402</Y>
                   </MouseCoordinates>
                 </MouseEnterPicture>
               </Hotspot>
@@ -3082,22 +3082,22 @@
             <PictureFile>Image_10.Png</PictureFile>
             <Time>2019-10-03T14:26:22.778034-07:00</Time>
             <MouseCoordinates>
-              <X>840.1388888888888</X>
-              <Y>364.87604166666665</Y>
+              <X>725</X>
+              <Y>359</Y>
             </MouseCoordinates>
             <AssetsDirectory>Manage Licenses Across Multiple AWS Accounts [R1-V4].demo_Assets\6ada0356-c640-4c89-b0af-9e6cb9f6dde6\</AssetsDirectory>
             <Hotspots>
               <Hotspot>
-                <Top>346.15208333333328</Top>
-                <Bottom>383.59999999999997</Bottom>
-                <Left>782.19444444444446</Left>
-                <Right>898.08333333333326</Right>
+                <Top>334</Top>
+                <Bottom>384</Bottom>
+                <Left>655</Left>
+                <Right>795</Right>
                 <MouseEnterPicture>
                   <PictureFile>Image_11.Png</PictureFile>
                   <Time>0001-01-01T00:00:00</Time>
                   <MouseCoordinates>
-                    <X>840.1388888888888</X>
-                    <Y>364.87604166666665</Y>
+                    <X>725</X>
+                    <Y>359</Y>
                   </MouseCoordinates>
                 </MouseEnterPicture>
               </Hotspot>
@@ -3217,22 +3217,22 @@
             <PictureFile>Image_15.Png</PictureFile>
             <Time>2019-10-03T14:26:45.4100795-07:00</Time>
             <MouseCoordinates>
-              <X>1701.0277777777776</X>
-              <Y>303.46145833333333</Y>
+              <X>1765</X>
+              <Y>277</Y>
             </MouseCoordinates>
             <AssetsDirectory>Manage Licenses Across Multiple AWS Accounts [R1-V4].demo_Assets\ae2709ce-dc24-4c8f-8213-0e348dfa4195\</AssetsDirectory>
             <Hotspots>
               <Hotspot>
-                <Top>284.73749999999995</Top>
-                <Bottom>322.18541666666664</Bottom>
-                <Left>1643.0833333333333</Left>
-                <Right>1758.9722222222222</Right>
+                <Top>252</Top>
+                <Bottom>302</Bottom>
+                <Left>1695</Left>
+                <Right>1835</Right>
                 <MouseEnterPicture>
                   <PictureFile>Image_16.Png</PictureFile>
                   <Time>0001-01-01T00:00:00</Time>
                   <MouseCoordinates>
-                    <X>1701.0277777777776</X>
-                    <Y>303.46145833333333</Y>
+                    <X>1765</X>
+                    <Y>277</Y>
                   </MouseCoordinates>
                 </MouseEnterPicture>
               </Hotspot>
@@ -3303,22 +3303,22 @@
             <PictureFile>Image_20.Png</PictureFile>
             <Time>2019-10-03T14:26:54.3118366-07:00</Time>
             <MouseCoordinates>
-              <X>885.66666666666663</X>
-              <Y>521.4083333333333</Y>
+              <X>780</X>
+              <Y>568</Y>
             </MouseCoordinates>
             <AssetsDirectory>Manage Licenses Across Multiple AWS Accounts [R1-V4].demo_Assets\7ffd0832-39e3-4a25-a23f-97bb53efe08a\</AssetsDirectory>
             <Hotspots>
               <Hotspot>
-                <Top>502.684375</Top>
-                <Bottom>540.13229166666656</Bottom>
-                <Left>827.72222222222217</Left>
-                <Right>943.61111111111109</Right>
+                <Top>543</Top>
+                <Bottom>593</Bottom>
+                <Left>710</Left>
+                <Right>850</Right>
                 <MouseEnterPicture>
                   <PictureFile>Image_21.Png</PictureFile>
                   <Time>0001-01-01T00:00:00</Time>
                   <MouseCoordinates>
-                    <X>885.66666666666663</X>
-                    <Y>521.4083333333333</Y>
+                    <X>780</X>
+                    <Y>568</Y>
                   </MouseCoordinates>
                 </MouseEnterPicture>
               </Hotspot>
@@ -3389,22 +3389,22 @@
             <PictureFile>Image_26.Png</PictureFile>
             <Time>2019-10-03T14:27:05.0776489-07:00</Time>
             <MouseCoordinates>
-              <X>1286.3111111111111</X>
-              <Y>509.42499999999995</Y>
+              <X>1264</X>
+              <Y>552</Y>
             </MouseCoordinates>
             <AssetsDirectory>Manage Licenses Across Multiple AWS Accounts [R1-V4].demo_Assets\adaa6e94-f0f3-4219-a3a4-dfe4529c8b50\</AssetsDirectory>
             <Hotspots>
               <Hotspot>
-                <Top>490.70104166666664</Top>
-                <Bottom>528.14895833333333</Bottom>
-                <Left>1228.3666666666666</Left>
-                <Right>1344.2555555555555</Right>
+                <Top>527</Top>
+                <Bottom>577</Bottom>
+                <Left>1194</Left>
+                <Right>1334</Right>
                 <MouseEnterPicture>
                   <PictureFile>Image_27.Png</PictureFile>
                   <Time>0001-01-01T00:00:00</Time>
                   <MouseCoordinates>
-                    <X>1286.3111111111111</X>
-                    <Y>509.42499999999995</Y>
+                    <X>1264</X>
+                    <Y>552</Y>
                   </MouseCoordinates>
                 </MouseEnterPicture>
               </Hotspot>
@@ -3446,22 +3446,22 @@
             <PictureFile>Image_30.Png</PictureFile>
             <Time>2019-10-03T14:27:47.8619169-07:00</Time>
             <MouseCoordinates>
-              <X>1745.7277777777776</X>
-              <Y>231.56145833333332</Y>
+              <X>1819</X>
+              <Y>181</Y>
             </MouseCoordinates>
             <AssetsDirectory>Manage Licenses Across Multiple AWS Accounts [R1-V4].demo_Assets\62a28ef5-7889-428c-8174-e1db2d5f534a\</AssetsDirectory>
             <Hotspots>
               <Hotspot>
-                <Top>212.83749999999998</Top>
-                <Bottom>250.28541666666666</Bottom>
-                <Left>1687.7833333333333</Left>
-                <Right>1803.6722222222222</Right>
+                <Top>156</Top>
+                <Bottom>206</Bottom>
+                <Left>1749</Left>
+                <Right>1889</Right>
                 <MouseEnterPicture>
                   <PictureFile>Image_31.Png</PictureFile>
                   <Time>0001-01-01T00:00:00</Time>
                   <MouseCoordinates>
-                    <X>1745.7277777777776</X>
-                    <Y>231.56145833333332</Y>
+                    <X>1819</X>
+                    <Y>181</Y>
                   </MouseCoordinates>
                 </MouseEnterPicture>
               </Hotspot>
@@ -3503,22 +3503,22 @@
             <PictureFile>Image_33.Png</PictureFile>
             <Time>2019-10-03T14:27:58.6785824-07:00</Time>
             <MouseCoordinates>
-              <X>689.64551450226668</X>
-              <Y>366.76456279110556</Y>
+              <X>543.19592355978534</X>
+              <Y>361.52153029132313</Y>
             </MouseCoordinates>
             <AssetsDirectory>Manage Licenses Across Multiple AWS Accounts [R1-V4].demo_Assets\504ee898-8796-4a10-a7fe-30d9bb2630a5\</AssetsDirectory>
             <Hotspots>
               <Hotspot>
-                <Top>347.65</Top>
-                <Bottom>385.09791666666666</Bottom>
-                <Left>658.85555555555561</Left>
-                <Right>774.74444444444441</Right>
+                <Top>336</Top>
+                <Bottom>386</Bottom>
+                <Left>506</Left>
+                <Right>646</Right>
                 <MouseEnterPicture>
                   <PictureFile>Image_34.Png</PictureFile>
                   <Time>0001-01-01T00:00:00</Time>
                   <MouseCoordinates>
-                    <X>1131.5166666666667</X>
-                    <Y>112.47708333333333</Y>
+                    <X>1077</X>
+                    <Y>22</Y>
                   </MouseCoordinates>
                 </MouseEnterPicture>
               </Hotspot>
@@ -3550,22 +3550,22 @@
             <PictureFile>Image_36.Png</PictureFile>
             <Time>2019-10-03T14:28:14.1952933-07:00</Time>
             <MouseCoordinates>
-              <X>717.62777777777774</X>
-              <Y>495.94374999999997</Y>
+              <X>577</X>
+              <Y>534</Y>
             </MouseCoordinates>
             <AssetsDirectory>Manage Licenses Across Multiple AWS Accounts [R1-V4].demo_Assets\3d365b4b-983a-4899-b647-b220a5e25112\</AssetsDirectory>
             <Hotspots>
               <Hotspot>
-                <Top>473</Top>
-                <Bottom>510.44791666666663</Bottom>
-                <Left>665</Left>
-                <Right>780.88888888888891</Right>
+                <Top>509</Top>
+                <Bottom>559</Bottom>
+                <Left>507</Left>
+                <Right>647</Right>
                 <MouseEnterPicture>
                   <PictureFile>Image_37.Png</PictureFile>
                   <Time>0001-01-01T00:00:00</Time>
                   <MouseCoordinates>
-                    <X>717.62777777777774</X>
-                    <Y>495.94374999999997</Y>
+                    <X>577</X>
+                    <Y>534</Y>
                   </MouseCoordinates>
                 </MouseEnterPicture>
               </Hotspot>
@@ -3597,22 +3597,22 @@
             <PictureFile>Image_39.Png</PictureFile>
             <Time>2019-10-03T14:28:20.1941745-07:00</Time>
             <MouseCoordinates>
-              <X>683.68888888888887</X>
-              <Y>397.8302083333333</Y>
+              <X>536</X>
+              <Y>403</Y>
             </MouseCoordinates>
             <AssetsDirectory>Manage Licenses Across Multiple AWS Accounts [R1-V4].demo_Assets\29ecc522-511c-4678-8571-574cbc79f9dd\</AssetsDirectory>
             <Hotspots>
               <Hotspot>
-                <Top>379.10625</Top>
-                <Bottom>416.55416666666662</Bottom>
-                <Left>625.74444444444441</Left>
-                <Right>741.63333333333333</Right>
+                <Top>378</Top>
+                <Bottom>428</Bottom>
+                <Left>466</Left>
+                <Right>606</Right>
                 <MouseEnterPicture>
                   <PictureFile>Image_40.Png</PictureFile>
                   <Time>0001-01-01T00:00:00</Time>
                   <MouseCoordinates>
-                    <X>683.68888888888887</X>
-                    <Y>397.8302083333333</Y>
+                    <X>536</X>
+                    <Y>403</Y>
                   </MouseCoordinates>
                 </MouseEnterPicture>
               </Hotspot>
@@ -3644,22 +3644,22 @@
             <PictureFile>Image_42.Png</PictureFile>
             <Time>2019-10-03T14:28:23.9452512-07:00</Time>
             <MouseCoordinates>
-              <X>785.50555555555547</X>
-              <Y>414.30729166666663</Y>
+              <X>659</X>
+              <Y>425</Y>
             </MouseCoordinates>
             <AssetsDirectory>Manage Licenses Across Multiple AWS Accounts [R1-V4].demo_Assets\c8bbaf38-eb0d-4b1b-a442-a7498fdff510\</AssetsDirectory>
             <Hotspots>
               <Hotspot>
-                <Top>395.58333333333331</Top>
-                <Bottom>433.03125</Bottom>
-                <Left>727.56111111111113</Left>
-                <Right>843.44999999999993</Right>
+                <Top>400</Top>
+                <Bottom>450</Bottom>
+                <Left>589</Left>
+                <Right>729</Right>
                 <MouseEnterPicture>
                   <PictureFile>Image_43.Png</PictureFile>
                   <Time>0001-01-01T00:00:00</Time>
                   <MouseCoordinates>
-                    <X>785.50555555555547</X>
-                    <Y>414.30729166666663</Y>
+                    <X>659</X>
+                    <Y>425</Y>
                   </MouseCoordinates>
                 </MouseEnterPicture>
               </Hotspot>
@@ -3740,22 +3740,22 @@
             <PictureFile>Image_48.Png</PictureFile>
             <Time>2019-10-03T14:28:55.3777136-07:00</Time>
             <MouseCoordinates>
-              <X>349.26666666666665</X>
-              <Y>284.73749999999995</Y>
+              <X>132</X>
+              <Y>252</Y>
             </MouseCoordinates>
             <AssetsDirectory>Manage Licenses Across Multiple AWS Accounts [R1-V4].demo_Assets\a1163ce0-3b10-4388-bc58-82018a986347\</AssetsDirectory>
             <Hotspots>
               <Hotspot>
-                <Top>266.0135416666667</Top>
-                <Bottom>303.46145833333333</Bottom>
-                <Left>291.32222222222219</Left>
-                <Right>407.21111111111111</Right>
+                <Top>227</Top>
+                <Bottom>277</Bottom>
+                <Left>62</Left>
+                <Right>202</Right>
                 <MouseEnterPicture>
                   <PictureFile>Image_49.Png</PictureFile>
                   <Time>0001-01-01T00:00:00</Time>
                   <MouseCoordinates>
-                    <X>349.26666666666665</X>
-                    <Y>284.73749999999995</Y>
+                    <X>132</X>
+                    <Y>252</Y>
                   </MouseCoordinates>
                 </MouseEnterPicture>
               </Hotspot>
@@ -3797,22 +3797,22 @@
             <PictureFile>Image_51.Png</PictureFile>
             <Time>2019-10-03T14:29:04.4127244-07:00</Time>
             <MouseCoordinates>
-              <X>1768.9055555555556</X>
-              <Y>378.35729166666664</Y>
+              <X>1847</X>
+              <Y>377</Y>
             </MouseCoordinates>
             <AssetsDirectory>Manage Licenses Across Multiple AWS Accounts [R1-V4].demo_Assets\46a7b24a-2665-4418-ac93-28bb36d02d78\</AssetsDirectory>
             <Hotspots>
               <Hotspot>
-                <Top>359.63333333333333</Top>
-                <Bottom>397.08124999999995</Bottom>
-                <Left>1710.961111111111</Left>
-                <Right>1826.85</Right>
+                <Top>352</Top>
+                <Bottom>402</Bottom>
+                <Left>1777</Left>
+                <Right>1917</Right>
                 <MouseEnterPicture>
                   <PictureFile>Image_52.Png</PictureFile>
                   <Time>0001-01-01T00:00:00</Time>
                   <MouseCoordinates>
-                    <X>1768.9055555555556</X>
-                    <Y>378.35729166666664</Y>
+                    <X>1847</X>
+                    <Y>377</Y>
                   </MouseCoordinates>
                 </MouseEnterPicture>
               </Hotspot>
