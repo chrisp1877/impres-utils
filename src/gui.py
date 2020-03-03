@@ -94,32 +94,13 @@ class ImpresysApp(QMainWindow):
         self.horizontalGroupBox.setLayout(layout)
 
 
-    def browse_demo(self):
-        options = QFileDialog.Options()
-        options |= QFileDialog.DontUseNativeDialog
-        fileName, _ = QFileDialog.getOpenFileName(self,"Browse for .demo files", "","Demo files (*.demo);;All Files (*)", options=options)
-        if fileName:
-            print(fileName)
-        self.bg_img_tbox.text = fileName
-
-    def browse_img(self):
-        options = QFileDialog.Options()
-        options |= QFileDialog.DontUseNativeDialog
-        fileName, _ = QFileDialog.getOpenFileName(self,"Browse for image files", "","All Files (*);;PNG files (*.png)", options=options)
-        if fileName:
-            print(fileName)
-        self.demo_dir_tbox.text = fileName
+    
 
     def toggleMenu(self, state):
         if state: self.statusBar.show()
         else: self.statusBar.hide()
     
-    @pyqtSlot()
-    def on_click(self):
-        demo_dir = self.demo_dir_tbox.text()
-        bg_img_dir = self.bg_img_tbox.text()
-        QMessageBox.question(self, 'Message - pythonspot.com', "Demo dir: " + demo_dir, QMessageBox.Ok, QMessageBox.Ok)
-        print('Test click')
+    
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
