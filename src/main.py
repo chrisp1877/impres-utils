@@ -21,6 +21,17 @@ class ImpresysWindow(QMainWindow):
 
     def __init__(self):
         super().__init__()
+
+        self.DEMO_PATH = None
+        self.IMG_PATH = None
+        self.SHELL_PATH = None
+        self.SECTS = list()
+        self.FG_LOC = [None, None]
+        self.FG_SIZE = [None, None]
+        self.SHELL_BG_SEPARATE = bool()
+        self.SHELL_LOC = [None, None]
+        self.SHELL_SIZE = [None, None]
+
         self.title = 'Impresys Utilities'
         self.left = 10
         self.top = 10
@@ -53,9 +64,21 @@ class ImpresysWindow(QMainWindow):
         fileMenu = mainMenu.addMenu('File')
         editMenu = mainMenu.addMenu('Edit')
         viewMenu = mainMenu.addMenu('View')
-        toolsMenu = mainMenu.addMenu('Tools')
+        #toolsMenu = mainMenu.addMenu('Tools')
         aboutMenu = mainMenu.addMenu('About')
         helpMenu = mainMenu.addMenu('Help')
+
+        saveConfig = QAction(QIcon('save.png'), 'Save inputs', self)
+        saveConfig.setShortcut('Ctrl+S')
+        saveConfig.setStatusTip('Save currently inputted variables to a text file')
+        #saveButton.triggered.connect(self.saveConfig)
+        fileMenu.addAction(saveConfig)
+
+        preferences = QAction(QIcon('prefs.png'), 'Preferences', self)
+        preferences.setShortcut('Ctrl+P')
+        preferences.setStatusTip('Change preferences for different utilities')
+        #preferences.triggered.connect(self.preferences)
+        editMenu.addAction(preferences)
 
         exitButton = QAction(QIcon('exit24.png'), 'Exit', self)
         exitButton.setShortcut('Ctrl+Q')
@@ -64,6 +87,7 @@ class ImpresysWindow(QMainWindow):
         fileMenu.addAction(exitButton)
 
         viewStatAct = QAction('View statusbar', self, checkable=True)
+        viewStatAct.setShortcut('Ctrl+Shift+V')
         viewStatAct.setStatusTip('View statusbar')
         viewStatAct.setChecked(True)
         viewStatAct.triggered.connect(self.toggleMenu)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
@@ -114,7 +138,20 @@ class ImpresysWindow(QMainWindow):
             "Enter new size of asset image in shell:"
         ]
 
-        self.shellForm.addRow(self.demo_browse_layout(self.shellTab))
+        d = QHBoxLayout()
+        demo_dir_label = QLabel(self.shellTab)
+        demo_dir_label.setText("Enter .demo file location:")
+        self.demo_tbox1 = QLineEdit(self.shellTab)
+        self.demo_tbox1.resize(100, 30)
+        self.browse_demo_btn = QPushButton('Browse...', self.shellTab)
+        self.browse_demo_btn.setStatusTip('Browse for .demo file')
+        self.browse_demo_btn.clicked.connect(self.browse_demo)
+        d.addWidget(demo_dir_label)
+        d.addStretch()
+        d.addWidget(self.demo_tbox1)
+        d.addWidget(self.browse_demo_btn)
+
+        self.shellForm.addRow(d)
         self.image_paste_form(shell_labels, self.shellTab, self.shellForm)
         
         self.shellForm.addRow(QLabel())
@@ -137,7 +174,7 @@ class ImpresysWindow(QMainWindow):
         self.shell_dir_label.setText("Enter shell image location:")
         self.shell_img_tbox = QLineEdit(self.shellTab)
         self.browse_shell_btn = QPushButton('Browse...', self.shellTab)
-        self.browse_shell_btn.setToolTip('Browse for shelling .png')
+        self.browse_shell_btn.setStatusTip('Browse for shelling .png')
         self.browse_shell_btn.clicked.connect(self.browse_shell)
         self.shell_dir_label.setEnabled(False)
         self.shell_img_tbox.setEnabled(False)
@@ -224,7 +261,20 @@ class ImpresysWindow(QMainWindow):
             "Enter new size of insertion image:"
         ]
         
-        self.insForm.addRow(self.demo_browse_layout(self.insTab))
+        d = QHBoxLayout()
+        demo_dir_label = QLabel(self.insTab)
+        demo_dir_label.setText("Enter .demo file location:")
+        self.demo_tbox2 = QLineEdit(self.insTab)
+        self.demo_tbox2.resize(100, 30)
+        self.browse_demo_btn = QPushButton('Browse...', self.insTab)
+        self.browse_demo_btn.setStatusTip('Browse for .demo file')
+        self.browse_demo_btn.clicked.connect(self.browse_demo)
+        d.addWidget(demo_dir_label)
+        d.addStretch()
+        d.addWidget(self.demo_tbox2)
+        d.addWidget(self.browse_demo_btn)
+
+        self.insForm.addRow(d)
         self.image_paste_form(ins_labels, self.insTab, self.insForm)
         
         self.shellForm.addRow(QLabel())
@@ -243,16 +293,31 @@ class ImpresysWindow(QMainWindow):
         self.xmlForm.setVerticalSpacing(20)
         self.xmlForm.setHorizontalSpacing(10)
         self.xmlForm.setContentsMargins(25, 25, 25, 25)
-        self.xmlForm.addRow(self.demo_browse_layout(self.xmlTab))
+
+        d = QHBoxLayout()
+        demo_dir_label = QLabel(self.xmlTab)
+        demo_dir_label.setText("Enter .demo file location:")
+        self.demo_tbox3 = QLineEdit(self.xmlTab)
+        self.demo_tbox3.resize(100, 30)
+        self.browse_demo_btn = QPushButton('Browse...', self.xmlTab)
+        self.browse_demo_btn.setStatusTip('Browse for .demo file')
+        self.browse_demo_btn.clicked.connect(self.browse_demo)
+        d.addWidget(demo_dir_label)
+        d.addStretch()
+        d.addWidget(self.demo_tbox3)
+        d.addWidget(self.browse_demo_btn)
+
+        self.xmlForm.addRow(d)
         self.xmlEditor = QTextEdit(self.xmlTab)
+        self.xmlEditor.setStatusTip("This is where the XML bulk editor will live...")
         self.xmlForm.addRow(self.xmlEditor)
         bot = QHBoxLayout()
         bot.setAlignment(Qt.AlignBottom)
         reset_btn = QPushButton('Reset', self.xmlTab)
-        reset_btn.setToolTip('Reset XML to default')
+        reset_btn.setStatusTip('Reset XML to default')
         reset_btn.clicked.connect(self.close) #@TODO Make actually reset
         save_btn = QPushButton("Save", self.xmlTab)
-        save_btn.setToolTip('Save current XML changes')
+        save_btn.setStatusTip('Save current XML changes')
         save_btn.clicked.connect(self.on_click) #@TODO Actually save XML
         bot.addWidget(reset_btn)
         bot.addStretch()
@@ -266,17 +331,19 @@ class ImpresysWindow(QMainWindow):
     #----------UI ELEMENTS-----------------#
 
     def demo_browse_layout(self, tab):
+        #@TODO Take demo textbox as parameter so you dont have to paste the demo browse layout
+        # code into every tab
         d = QHBoxLayout()
         demo_dir_label = QLabel(tab)
         demo_dir_label.setText("Enter .demo file location:")
-        self.demo_dir_tbox = QLineEdit(tab)
-        self.demo_dir_tbox.resize(100, 30)
+        self.demo_tbox = QLineEdit(tab)
+        self.demo_tbox.resize(100, 30)
         self.browse_demo_btn = QPushButton('Browse...', tab)
-        self.browse_demo_btn.setToolTip('Browse for .demo file')
+        self.browse_demo_btn.setStatusTip('Browse for .demo file')
         self.browse_demo_btn.clicked.connect(self.browse_demo)
         d.addWidget(demo_dir_label)
         d.addStretch()
-        d.addWidget(self.demo_dir_tbox)
+        d.addWidget(self.demo_tbox)
         d.addWidget(self.browse_demo_btn)
         return d
 
@@ -287,16 +354,18 @@ class ImpresysWindow(QMainWindow):
         translation and scaling for either the asset (shelling)
         or insertion image, and stores them in self variables
         '''
+        #@TODO Take Img textbox as parameter so you dont have to repaste this in each tab
+        # for the textbox to be filled out when an image is brwosed for
         browse = QHBoxLayout()
         dir_label = QLabel(labels[0], tab)
-        self.bg_img_tbox = QLineEdit(tab)
-        self.browse_bg_btn = QPushButton('Browse...', tab)
-        self.browse_bg_btn.setToolTip(labels[1])
-        self.browse_bg_btn.clicked.connect(self.browse_img)
+        self.img_tbox = QLineEdit(tab)
+        self.browse_img_btn = QPushButton('Browse...', tab)
+        self.browse_img_btn.setStatusTip(labels[1])
+        self.browse_img_btn.clicked.connect(self.browse_img)
         browse.addWidget(dir_label)
         browse.addStretch()
-        browse.addWidget(self.bg_img_tbox)
-        browse.addWidget(self.browse_bg_btn)
+        browse.addWidget(self.img_tbox)
+        browse.addWidget(self.browse_img_btn)
         form.addRow(browse)
 
         loc = QHBoxLayout()
@@ -350,10 +419,10 @@ class ImpresysWindow(QMainWindow):
         bot = QHBoxLayout()
         bot.setAlignment(Qt.AlignBottom)
         self.close_btn = QPushButton('Cancel', tab)
-        self.close_btn.setToolTip('Close the program')
+        self.close_btn.setStatusTip('Close the program')
         self.close_btn.clicked.connect(self.close)
         self.submit_btn = QPushButton(labels[0], tab)
-        self.submit_btn.setToolTip(labels[1])
+        self.submit_btn.setStatusTip(labels[1])
         self.submit_btn.clicked.connect(self.on_click)
         bot.addWidget(self.close_btn)
         bot.addStretch()
@@ -365,13 +434,16 @@ class ImpresysWindow(QMainWindow):
     def addRandomTextSlot( self ):
         self.textEdit.insertPlainText( "Hello World!" )
 
-    def browse_demo(self):
+    def browse_demo(self, tnum):
         options = QFileDialog.Options()
         options |= QFileDialog.DontUseNativeDialog
         fileName, _ = QFileDialog.getOpenFileName(self,"Browse for .demo files", "","Demo files (*.demo);;All Files (*)", options=options)
         if fileName:
             print(fileName)
-        self.bg_img_tbox.text = fileName
+        self.demo_tbox1.setText(fileName); self.demo_tbox1.text = fileName
+        self.demo_tbox2.setText(fileName); self.demo_tbox2.text = fileName
+        self.demo_tbox3.setText(fileName); self.demo_tbox3.text = fileName
+        self.DEMO_PATH = fileName
 
     def browse_img(self):
         options = QFileDialog.Options()
@@ -379,7 +451,9 @@ class ImpresysWindow(QMainWindow):
         fileName, _ = QFileDialog.getOpenFileName(self,"Browse for image files", "","All Files (*);;PNG files (*.png)", options=options)
         if fileName:
             print(fileName)
-        self.demo_dir_tbox.text = fileName
+        self.img_tbox.setText(fileName)
+        self.img_tbox.text = fileName
+        self.IMG_PATH = fileName
 
     def browse_shell(self):
         options = QFileDialog.Options()
@@ -387,12 +461,14 @@ class ImpresysWindow(QMainWindow):
         fileName, _ = QFileDialog.getOpenFileName(self,"Browse for image files", "","All Files (*);;PNG files (*.png)", options=options)
         if fileName:
             print(fileName)
-        self.demo_dir_tbox.text = fileName
+        self.shell_img_tbox.setText(fileName)
+        self.shell_img_tbox.text = fileName
+        self.SHELL_PATH = fileName
 
     @pyqtSlot()
     def on_click(self):
-        demo_dir = self.demo_dir_tbox.text()
-        bg_img_dir = self.bg_img_tbox.text()
+        demo_dir = self.demo_tbox.text()
+        bg_img_dir = self.img_tbox.text()
         shell = self.shell
         one_image = self.one_image
         print(demo_dir, bg_img_dir, shell, one_image)
