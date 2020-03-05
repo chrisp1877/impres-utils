@@ -6,7 +6,7 @@ from PyQt5.QtWidgets import (
     QLabel, QLineEdit, QMenu, QMenuBar, QPushButton, QSpinBox, QTextEdit,
     QVBoxLayout, QFileDialog, QAction, QMessageBox, QFrame, QStatusBar,
     QTabWidget, QSpacerItem, QSizePolicy, QRadioButton, QProgressBar,
-    QButtonGroup, QDoubleSpinBox, QGraphicsScene
+    QButtonGroup, QDoubleSpinBox, QGraphicsScene, QProgressDialog
 )
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import pyqtSlot, Qt, QFileSelector
@@ -36,7 +36,7 @@ class ImpresysWindow(QMainWindow):
         self.left = 10
         self.top = 10
         self.width = 450
-        self.height = 600
+        self.height = 550
         self.setupUi()
 
     def setupUi(self):
@@ -48,11 +48,14 @@ class ImpresysWindow(QMainWindow):
         
         self.addStatusBar()
         self.addMenuBar()
+        self.configPreview()                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              
         self.setTabs()
         self.setFirstTab()
-        self.setSecondTab()
+        self.setSecondTab() 
         self.setXmlTab()
+        self.progBar = QProgressBar()
         self.gridLayout.addWidget(self.tabWidget, 0, 0, 1, 1)
+        #self.gridLayout.addWidget(self.progBar, 1, 1, 1, 1)
 
         self.setCentralWidget(self.centralwidget)
 
@@ -93,6 +96,13 @@ class ImpresysWindow(QMainWindow):
         viewStatAct.triggered.connect(self.toggleMenu)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
         viewMenu.addAction(viewStatAct)
 
+        viewPrev = QAction('View preview', self, checkable=True)
+        viewPrev.setShortcut('Ctrl+Shift+P')
+        viewPrev.setStatusTip('View preview of shelling / insertion points')
+        viewPrev.setChecked(True)
+        viewPrev.triggered.connect(self.preview_img)
+        viewMenu.addAction(viewPrev)
+
         aboutButton = QAction(QIcon("about1.png"), "About", self)
         aboutButton.setShortcut('Ctrl+A')
         aboutButton.setStatusTip('About application')
@@ -104,6 +114,9 @@ class ImpresysWindow(QMainWindow):
         helpButton.setStatusTip('Help for shelling and inserting')
         helpButton.triggered.connect(self.open_help)
         helpMenu.addAction(helpButton)
+
+    def configPreview(self):
+        self.shellLayout = QVBoxLayout()
 
     def setTabs(self):
         self.tabWidget = QTabWidget(self.centralwidget)
@@ -121,7 +134,6 @@ class ImpresysWindow(QMainWindow):
         self.setStatusBar(self.statusbar)
 
     def setFirstTab(self):
-        self.shellLayout = QVBoxLayout()
 
         self.shellForm = QFormLayout(self.shellTab)
         self.shellForm.setVerticalSpacing(20)
@@ -161,6 +173,7 @@ class ImpresysWindow(QMainWindow):
         self.shell_label.setText("Is shell in BG, or separate? :")
         self.num_paste = ['Combined', 'Separate']
         self.num_combo = QComboBox()
+        self.extra_on = self.num_combo.currentIndex == 1
         self.num_combo.setFixedWidth(100)
         self.num_combo.addItems(self.num_paste)
         self.sh1.addWidget(self.shell_label)
@@ -188,53 +201,58 @@ class ImpresysWindow(QMainWindow):
         self.sh3 = QHBoxLayout()
         self.sloc_label = QLabel(self.shellTab)
         self.sloc_label.setText("Enter (x, y) coords of shell on BG image: ")
-        self.slocx = QDoubleSpinBox(self.shellTab)
-        self.slocx.setFixedWidth(70)
-        self.slocy = QDoubleSpinBox(self.shellTab)
-        self.slocy.setFixedWidth(70)
+        self.s_shlocx = QLineEdit(self.shellTab) #@FIELD
+        self.s_shlocx.setFixedWidth(70)
+        self.s_shlocy = QLineEdit(self.shellTab) #@FIELD
+        self.s_shlocy.setFixedWidth(70)
         self.sx_lab = QLabel(self.shellTab)
         self.sx_lab.setText("X: ")
         self.sy_lab = QLabel(self.shellTab)
         self.sy_lab.setText("Y: ")
         self.sloc_label.setEnabled(False)
-        self.slocx.setEnabled(False)
-        self.slocy.setEnabled(False)
+        self.s_shlocx.setEnabled(False)
+        self.s_shlocy.setEnabled(False)
         self.sh3.addWidget(self.sloc_label)
         self.sh3.addStretch()
         self.sh3.addWidget(self.sx_lab)
-        self.sh3.addWidget(self.slocx)
+        self.sh3.addWidget(self.s_shlocx)
         self.sh3.addSpacing(10)
         self.sh3.addWidget(self.sy_lab)
-        self.sh3.addWidget(self.slocy)
+        self.sh3.addWidget(self.s_shlocy)
         self.shellForm.addRow(self.sh3)
 
         self.sh4 = QHBoxLayout()
         self.ssize_label = QLabel(self.shellTab)
         self.ssize_label.setText("Enter new size of shell on BG image: ")
-        self.ssizex = QDoubleSpinBox(self.shellTab)
-        self.ssizex.setFixedWidth(70)
-        self.ssizey = QDoubleSpinBox(self.shellTab)
-        self.ssizey.setFixedWidth(70)
+        self.s_shsizex = QLineEdit(self.shellTab) #@FIELD
+        self.s_shsizex.setFixedWidth(70)
+        self.s_shsizey = QLineEdit(self.shellTab) #@FIELD
+        self.s_shsizey.setFixedWidth(70)
         self.sx_labs = QLabel(self.shellTab)
         self.sx_labs.setText("X: ")
         self.sy_labs = QLabel(self.shellTab)
         self.sy_labs.setText("Y: ")
         self.ssize_label.setEnabled(False)
-        self.ssizex.setEnabled(False)
-        self.ssizey.setEnabled(False)
+        self.s_shsizex.setEnabled(False)
+        self.s_shsizey.setEnabled(False)
         self.sh4.addWidget(self.ssize_label)
         self.sh4.addStretch()
         self.sh4.addWidget(self.sx_labs)
-        self.sh4.addWidget(self.ssizex)
+        self.sh4.addWidget(self.s_shsizex)
         self.sh4.addSpacing(10)
         self.sh4.addWidget(self.sy_labs)
-        self.sh4.addWidget(self.ssizey)
+        self.sh4.addWidget(self.s_shsizey)
         self.shellForm.addRow(self.sh4)
 
         self.shellSects = QLineEdit(self.shellTab)
+        self.shellSects.setPlaceholderText('All')
+        self.to_shell = self.shellSects.text().split(",") #@FIELD
         self.shellForm.addRow(QLabel("Sections to apply shelling to (separated by commas, see Help): ", self.shellTab))
         self.shellForm.addRow(self.shellSects)
+
         self.bottom_buttons(['Shell', 'Begin shelling'], self.shellTab, self.shellForm)
+
+        
         
         self.shellLayout.addLayout(self.shellForm)
         self.shellLayout.addLayout(self.imgPreviewLayout)
@@ -282,6 +300,8 @@ class ImpresysWindow(QMainWindow):
         self.tabWidget.addTab(self.insTab, "")
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.insTab), "Insert")
         self.insSects = QLineEdit(self.insTab)
+        self.insSects.setPlaceholderText('All')
+        self.to_ins = self.insSects.text().split(",") #@FIELD
         self.insForm.addRow(QLabel("Sections to apply shelling to (separated by commas, see Help): ", self.insTab))
         self.insForm.addRow(self.insSects)
         self.bottom_buttons(['Insert', 'Begin insertion'], self.insTab, self.insForm)
@@ -318,7 +338,7 @@ class ImpresysWindow(QMainWindow):
         reset_btn.clicked.connect(self.close) #@TODO Make actually reset
         save_btn = QPushButton("Save", self.xmlTab)
         save_btn.setStatusTip('Save current XML changes')
-        save_btn.clicked.connect(self.on_click) #@TODO Actually save XML
+        save_btn.clicked.connect(self.ins_submit) #@TODO Actually save XML
         bot.addWidget(reset_btn)
         bot.addStretch()
         bot.addWidget(save_btn)
@@ -358,62 +378,77 @@ class ImpresysWindow(QMainWindow):
         # for the textbox to be filled out when an image is brwosed for
         browse = QHBoxLayout()
         dir_label = QLabel(labels[0], tab)
-        self.img_tbox = QLineEdit(tab)
+        if tab is self.shellTab:
+            self.img_tbox1 = QLineEdit(tab)
+        if tab is self.insTab:
+            self.img_tbox2 = QLineEdit(tab)
         self.browse_img_btn = QPushButton('Browse...', tab)
         self.browse_img_btn.setStatusTip(labels[1])
         self.browse_img_btn.clicked.connect(self.browse_img)
         browse.addWidget(dir_label)
         browse.addStretch()
-        browse.addWidget(self.img_tbox)
+        browse.addWidget(self.img_tbox1 if tab is self.shellTab else self.img_tbox2)
         browse.addWidget(self.browse_img_btn)
         form.addRow(browse)
 
         loc = QHBoxLayout()
         loc_label = QLabel(labels[2], tab)
-        self.locx = QDoubleSpinBox(tab)
-        self.locx.setFixedWidth(70)
-        self.locy = QDoubleSpinBox(tab)
-        self.locy.setFixedWidth(70)
+        if tab is self.shellTab:
+            self.shlocx = QLineEdit(tab)
+            self.shlocx.setFixedWidth(70)
+            self.shlocy = QLineEdit(tab)
+            self.shlocy.setFixedWidth(70)
+        elif tab is self.insTab:
+            self.inslocx = QLineEdit(tab)
+            self.inslocx.setFixedWidth(70)
+            self.inslocy = QLineEdit(tab)
+            self.inslocy.setFixedWidth(70)
         x_lab = QLabel("X: ", tab)
         y_lab = QLabel("Y: ", tab)
         loc.addWidget(loc_label)
         loc.addStretch()
         loc.addWidget(x_lab)
-        loc.addWidget(self.locx)
+        loc.addWidget(self.shlocx if tab is self.shellTab else self.inslocx)
         loc.addSpacing(10)
         loc.addWidget(y_lab)
-        loc.addWidget(self.locy)
+        loc.addWidget(self.shlocy if tab is self.shellTab else self.inslocy)
         form.addRow(loc)
 
         resize = QHBoxLayout()
         size_label = QLabel(labels[3], tab)
         size_label.setText(labels[3])
-        self.sizex = QDoubleSpinBox(tab)
-        self.sizex.setFixedWidth(70)
-        self.sizey = QDoubleSpinBox(tab)
-        self.sizey.setFixedWidth(70)
+        if tab is self.shellTab:
+            self.shsizex = QLineEdit(tab)
+            self.shsizex.setFixedWidth(70)
+            self.shsizey = QLineEdit(tab)
+            self.shsizey.setFixedWidth(70)
+        elif tab is self.insTab:
+            self.inssizex = QLineEdit(tab)
+            self.inssizex.setFixedWidth(70)
+            self.inssizey = QLineEdit(tab)
+            self.inssizey.setFixedWidth(70)
         x_labs = QLabel("X: ", tab)
         y_labs = QLabel("Y: ", tab)
         resize.addWidget(size_label)
         resize.addStretch()
         resize.addWidget(x_labs)
-        resize.addWidget(self.sizex)
+        resize.addWidget(self.shsizex if tab is self.shellTab else self.inssizex)
         resize.addSpacing(10)
         resize.addWidget(y_labs)
-        resize.addWidget(self.sizey)
+        resize.addWidget(self.shsizey if tab is self.shellTab else self.inssizey)
         form.addRow(resize)
 
     def toggle_extra_shell(self, toggle):
-        extra_on = (toggle == 1)
-        self.shell_dir_label.setEnabled(extra_on)
-        self.shell_img_tbox.setEnabled(extra_on)
-        self.browse_shell_btn.setEnabled(extra_on)
-        self.sloc_label.setEnabled(extra_on)
-        self.slocx.setEnabled(extra_on)
-        self.slocy.setEnabled(extra_on)
-        self.ssize_label.setEnabled(extra_on)
-        self.ssizex.setEnabled(extra_on)
-        self.ssizey.setEnabled(extra_on)
+        self.extra_on = (toggle == 1)
+        self.shell_dir_label.setEnabled(self.extra_on)
+        self.shell_img_tbox.setEnabled(self.extra_on)
+        self.browse_shell_btn.setEnabled(self.extra_on)
+        self.sloc_label.setEnabled(self.extra_on)
+        self.s_shlocx.setEnabled(self.extra_on)
+        self.s_shlocy.setEnabled(self.extra_on)
+        self.ssize_label.setEnabled(self.extra_on)
+        self.s_shsizex.setEnabled(self.extra_on)
+        self.s_shsizey.setEnabled(self.extra_on)
 
     def bottom_buttons(self, labels, tab, form):
         bot = QHBoxLayout()
@@ -423,7 +458,10 @@ class ImpresysWindow(QMainWindow):
         self.close_btn.clicked.connect(self.close)
         self.submit_btn = QPushButton(labels[0], tab)
         self.submit_btn.setStatusTip(labels[1])
-        self.submit_btn.clicked.connect(self.on_click)
+        if tab is self.shellTab:
+            self.submit_btn.clicked.connect(self.shell_submit)
+        elif tab is self.insTab:
+            self.submit_btn.clicked.connect(self.ins_submit)
         bot.addWidget(self.close_btn)
         bot.addStretch()
         bot.addWidget(self.submit_btn)
@@ -440,9 +478,9 @@ class ImpresysWindow(QMainWindow):
         fileName, _ = QFileDialog.getOpenFileName(self,"Browse for .demo files", "","Demo files (*.demo);;All Files (*)", options=options)
         if fileName:
             print(fileName)
-        self.demo_tbox1.setText(fileName); self.demo_tbox1.text = fileName
-        self.demo_tbox2.setText(fileName); self.demo_tbox2.text = fileName
-        self.demo_tbox3.setText(fileName); self.demo_tbox3.text = fileName
+        self.demo_tbox1.setText(fileName)
+        self.demo_tbox2.setText(fileName)
+        self.demo_tbox3.setText(fileName)
         self.DEMO_PATH = fileName
 
     def browse_img(self):
@@ -451,31 +489,61 @@ class ImpresysWindow(QMainWindow):
         fileName, _ = QFileDialog.getOpenFileName(self,"Browse for image files", "","All Files (*);;PNG files (*.png)", options=options)
         if fileName:
             print(fileName)
-        self.img_tbox.setText(fileName)
-        self.img_tbox.text = fileName
+        self.img_tbox1.setText(fileName)
+        self.img_tbox2.setText(fileName)
         self.IMG_PATH = fileName
 
-    def browse_shell(self):
+    def browse_shell(self, tbox):
         options = QFileDialog.Options()
         options |= QFileDialog.DontUseNativeDialog
         fileName, _ = QFileDialog.getOpenFileName(self,"Browse for image files", "","All Files (*);;PNG files (*.png)", options=options)
         if fileName:
             print(fileName)
-        self.shell_img_tbox.setText(fileName)
-        self.shell_img_tbox.text = fileName
+        tbox.setText(fileName)
         self.SHELL_PATH = fileName
 
     @pyqtSlot()
-    def on_click(self):
-        demo_dir = self.demo_tbox.text()
-        bg_img_dir = self.img_tbox.text()
-        shell = self.shell
-        one_image = self.one_image
-        print(demo_dir, bg_img_dir, shell, one_image)
-        QMessageBox.question(
-            "Hello",
-            QMessageBox.Ok, 
-            QMessageBox.Ok)
+    def shell_submit(self):
+        demo_dir = self.demo_tbox1.text()
+        bg_img_dir = self.img_tbox1.text()
+        bg_img_loc = None
+        bg_img_size = None
+        if ((len(self.shlocx.text()) > 0 and len(self.shlocy.text()) > 0) and
+           (len(self.shsizex.text()) > 0 and len(self.shsizey.text()) > 0)):
+            bg_img_loc = (float(self.shlocx.text()), float(self.shlocy.text()))
+            bg_img_size = (float(self.shsizex.text()), float(self.shsizey.text()))
+        shell_img_tbox = None; shell_img_loc = None; shell_img_size = None;
+        to_shell = self.to_shell
+        if self.extra_on:
+            shell_img_tbox = self.shell_img_tbox.text()
+            if ((len(self.s_shlocx.text()) > 0 and len(self.s_shlocy.text()) > 0) and
+               (len(self.s_shsizex.text()) > 0 and len(self.s_shsizey.text()) > 0)):
+                shell_img_loc = (float(self.s_shlocx.text()), float(self.s_shlocy.text()))
+                shell_img_size = (float(self.s_shsizex.text()), float(self.s_shsizey.text()))
+        print(demo_dir, bg_img_dir, bg_img_loc, bg_img_size, to_shell, shell_img_tbox, shell_img_loc, shell_img_size)
+        self.shellProg = QProgressDialog("Shelling asset files...", "Cancel", 0, 100)
+        self.shellProg.setWindowTitle("Impresys Utilities - Shelling...")
+        self.shellProg.setWindowIcon(QIcon(SCRIPTDIR+os.path.sep+'logo.png'))
+        self.shellProg.setGeometry(10, 10, 300, 100)
+        self.shellProg.show()
+        #self.image_paste(props...)
+
+    @pyqtSlot()
+    def ins_submit(self):
+        demo_dir = self.demo_tbox2.text()
+        bg_img_dir = self.img_tbox2.text()
+        fg_img_loc = None 
+        fg_img_size = None
+        if ((len(self.inslocx.text()) > 0 and len(self.inslocy.text()) > 0) and
+           (len(self.inssizex.text()) > 0 and len(self.inssizey.text()) > 0)):
+            fg_img_loc = (float(self.inslocx.text()), float(self.inslocy.text()))
+            fg_img_size = (float(self.inssizex.text()), float(self.inssizey.text()))
+        print(demo_dir, bg_img_dir, fg_img_loc, fg_img_size)
+        self.insProg = QProgressDialog("Inserting into asset files...", "Cancel", 0, 100)
+        self.insProg.setWindowTitle("Impresys Utilities - Inserting...")
+        self.insProg.setWindowIcon(QIcon(SCRIPTDIR+os.path.sep+'logo.png'))
+        self.insProg.setGeometry(10, 10, 300, 100)
+        #self.image_paste(props...)
 
     def open_about(self):
         about = QDialog(self)
@@ -513,6 +581,9 @@ class ImpresysWindow(QMainWindow):
     def toggleMenu(self, state):
         if state: self.statusbar.show()
         else: self.statusbar.hide()
+
+    def preview_img(self):
+        self.setGeometry(10, 10, 800, 450)
 
     def image_paste(self, demo_path, image_path, img_loc, img_size, typ='shell', sect='All'):
         bg_img_size = (1920, 1080)
