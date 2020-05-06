@@ -37,6 +37,7 @@ class ImpresysWindow(QMainWindow):
         self.top = 10
         self.width = 450
         self.height = 550
+        self.width_with_rightpane = 900
         self.setupUi()
 
     def setupUi(self):
@@ -45,20 +46,17 @@ class ImpresysWindow(QMainWindow):
         self.setWindowIcon(QIcon(SCRIPTDIR+os.path.sep+'logo.png'))
         self.centralwidget = QWidget(self)
         self.gridLayout = QGridLayout(self.centralwidget)
-        
         self.addStatusBar()
         self.addMenuBar()
-        self.configPreview()                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              
+        self.configPreview()
         self.setTabs()
         self.setFirstTab()
-        self.setSecondTab() 
+        self.setSecondTab()
         self.setXmlTab()
         self.progBar = QProgressBar()
         self.gridLayout.addWidget(self.tabWidget, 0, 0, 1, 1)
         #self.gridLayout.addWidget(self.progBar, 1, 1, 1, 1)
-
         self.setCentralWidget(self.centralwidget)
-
         self.tabWidget.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(self)
 
@@ -70,7 +68,6 @@ class ImpresysWindow(QMainWindow):
         #toolsMenu = mainMenu.addMenu('Tools')
         aboutMenu = mainMenu.addMenu('About')
         helpMenu = mainMenu.addMenu('Help')
-
         saveConfig = QAction(QIcon('save.png'), 'Save inputs', self)
         saveConfig.setShortcut('Ctrl+S')
         saveConfig.setStatusTip('Save currently inputted variables to a text file')
@@ -93,7 +90,7 @@ class ImpresysWindow(QMainWindow):
         viewStatAct.setShortcut('Ctrl+Shift+V')
         viewStatAct.setStatusTip('View statusbar')
         viewStatAct.setChecked(True)
-        viewStatAct.triggered.connect(self.toggleMenu)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
+        viewStatAct.triggered.connect(self.toggleMenu)
         viewMenu.addAction(viewStatAct)
 
         viewPrev = QAction('View preview', self, checkable=True)
@@ -123,9 +120,13 @@ class ImpresysWindow(QMainWindow):
         self.tabWidget.setObjectName("tabWidget")
         self.shellTab = QWidget()
         self.shellTab.setObjectName("shellTab")
+        self.shellTab.setStatusTip("Performing shelling on demo assets")
         self.insTab = QWidget()
         self.insTab.setObjectName("insTab")
+        self.insTab.setStatusTip("Insert an image into demo assets")
         self.xmlTab = QWidget()
+        self.xmlTab.setObjectName("xmlTab")
+        self.xmlTab.setStatusTip("Perform bulk XML edits on demo")
 
     def addStatusBar(self):
         self.statusbar = QStatusBar(self)
@@ -134,7 +135,6 @@ class ImpresysWindow(QMainWindow):
         self.setStatusBar(self.statusbar)
 
     def setFirstTab(self):
-
         self.shellForm = QFormLayout(self.shellTab)
         self.shellForm.setVerticalSpacing(20)
         self.shellForm.setHorizontalSpacing(10)
@@ -165,9 +165,9 @@ class ImpresysWindow(QMainWindow):
 
         self.shellForm.addRow(d)
         self.image_paste_form(shell_labels, self.shellTab, self.shellForm)
-        
+
         self.shellForm.addRow(QLabel())
-        
+
         self.sh1 = QHBoxLayout()
         self.shell_label = QLabel(self.shellTab)
         self.shell_label.setText("Is shell in BG, or separate? :")
@@ -252,8 +252,6 @@ class ImpresysWindow(QMainWindow):
 
         self.bottom_buttons(['Shell', 'Begin shelling'], self.shellTab, self.shellForm)
 
-        
-        
         self.shellLayout.addLayout(self.shellForm)
         self.shellLayout.addLayout(self.imgPreviewLayout)
         self.shellTab.setLayout(self.shellLayout)
@@ -278,7 +276,7 @@ class ImpresysWindow(QMainWindow):
             "Enter (x, y) coords of insertion image: ",
             "Enter new size of insertion image:"
         ]
-        
+
         d = QHBoxLayout()
         demo_dir_label = QLabel(self.insTab)
         demo_dir_label.setText("Enter .demo file location:")
@@ -294,7 +292,7 @@ class ImpresysWindow(QMainWindow):
 
         self.insForm.addRow(d)
         self.image_paste_form(ins_labels, self.insTab, self.insForm)
-        
+
         self.shellForm.addRow(QLabel())
 
         self.tabWidget.addTab(self.insTab, "")
@@ -346,7 +344,7 @@ class ImpresysWindow(QMainWindow):
 
         self.tabWidget.addTab(self.xmlTab, "")
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.xmlTab), "XML")
-        
+
 
     #----------UI ELEMENTS-----------------#
 
@@ -532,7 +530,7 @@ class ImpresysWindow(QMainWindow):
     def ins_submit(self):
         demo_dir = self.demo_tbox2.text()
         bg_img_dir = self.img_tbox2.text()
-        fg_img_loc = None 
+        fg_img_loc = None
         fg_img_size = None
         if ((len(self.inslocx.text()) > 0 and len(self.inslocy.text()) > 0) and
            (len(self.inssizex.text()) > 0 and len(self.inssizey.text()) > 0)):
@@ -591,7 +589,7 @@ class ImpresysWindow(QMainWindow):
         fg_img_size = img_size
         if (fg_img_size[0]+fg_img_loc[0]>bg_img_size[0] or
             fg_img_size[1]+fg_img_loc[1]>bg_img_size[1]):
-            raise Exception("Resized and relocated image beyond original boundaries")                                                                                                                   
+            raise Exception("Resized and relocated image beyond original boundaries")
         img = Image.open(image_path)
         parser = ET.XMLParser(strip_cdata=False)
         demo = ET.parse(demo_path, parser)
@@ -618,7 +616,7 @@ class ImpresysWindow(QMainWindow):
             for i, c in enumerate(['X', 'Y']):
                 mouse_path.find(c).text = str(new[i])
             return new, old
-                
+
         def get_set_box(box_type: str) -> Tuple[List[float], List[float]]:
             dirs = ['Top', 'Bottom', 'Left', 'Right']
             cbox = step.find("StartPicture").find(box_type)
@@ -636,7 +634,7 @@ class ImpresysWindow(QMainWindow):
                     scale = float((fg_img_size[0] * fg_img_size[1]) / (bg_img_size[0] * bg_img_size[1]))
                     cbox.find('TextRect').find('FontSize').text = str(int(scale * font_size) + 2)
                 return new, old
-        
+
         for chapter in list(root.iter('Chapter')):
             section = chapter.find('XmlName').find('Name').text
             if (sect == 'All') or (sect in section):
@@ -660,11 +658,11 @@ class ImpresysWindow(QMainWindow):
                                 hcloc_new, hcloc_old = get_set_mouse(h_mouse) # -> or this one?
                             get_set_box("Hotspots")
                             print("SHIFTED:  "+str(hcloc_old)+" to "+str(hcloc_new))
-                        
+
                         other_boxes = ["VideoRects", "JumpRects", "TextRects", "HighlightRects"]
                         for box in other_boxes:
                             get_set_box(box)
-                            
+
                     for filename in os.listdir(assetpath):
                         if filename.endswith('.Png'):
                             impath = assetpath+filename
@@ -680,7 +678,7 @@ class ImpresysWindow(QMainWindow):
                                 asset_img.paste(fg_img_resize, fg_img_loc)
                                 asset_img.save(impath, quality=100)
                                 print("INSERTED: Section: "+section+", Step: "+str(i)+", image: "+"t")
-    
+
         demo.write(demo_path, xml_declaration=True, encoding='utf-8')
 
 if __name__ == "__main__":
