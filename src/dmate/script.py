@@ -3,7 +3,7 @@ from pathlib import Path, PurePath
 from itertools import islice
 from typing import List, Tuple
 import sys
-from etc.utils import validate_path
+from etc.utils import validate_path, logger
 import re
 
 class Script:
@@ -15,45 +15,45 @@ class Script:
         self.num_sections = 0
         self.length = 0
         self.num_ci, self.num_tp = 0, 0
-        self.loaded = self.load(path)
+        try:
+            self.loaded = self.load(path)
+        except BaseException as exc:
+            self.loaded = False
+            logger.error("Script failed to import. %s", str(exc))
         
-    def load(self, path: str = "", verbose: bool = True) -> bool:
-        if not path or not validate_path(path, "file", ".docx", "Script", "open"):
-            print("Script failed to import. Invalid path provided.")
-            return False
+    @validate_path
+    def load(self, path: str = "") -> bool:
         self.path = Path(path)
         try:
             self.doc = docx.Document(self.path)
         except:
-            if verbose:
-                print("Document is invalid DemoMate script file.")
-            self.doc = None
-            return False
-        else:
-            for i, table in enumerate(self.doc.tables):
-                prev_len = 0
-                data = islice(zip(table.column_cells(1), table.column_cells(2)), 1, None)
-                self.num_sections += 1
-                for j, (ci, tp) in enumerate(data):
-                    self.tp.append(TextBox(tp.text))
-                    self.ci.append(TextBox(ci.text))
-                    self.length += 1
-                    if ci.text:
-                        self.num_ci += 1
-                    if tp.text:
-                        self.num_tp += 1
-            if verbose:
-                print("Script: Finished loading, with {} sectons, {} steps"
-                        .format(self.num_sections, len(self.tp)))
+            raise NameError("Script is not a valid DemoMate script document.")
+        for i, table in enumerate(self.doc.tables):
+            prev_len = 0
+            data = islice(zip(table.column_cells(1), table.column_cells(2)), 1, None)
+            self.num_sections += 1
+            for j, (ci, tp) in enumerate(data):
+                self.tp.append(TextBox(tp.text))
+                self.ci.append(TextBox(ci.text))
+                self.length += 1
+                if ci.text:
+                    self.num_ci += 1
+                if tp.text:
+                    self.num_tp += 1
+        print("Script: Finished loading, with {} sectons, {} steps"
+                    .format(self.num_sections, len(self.tp)))
         return True
 
     def duplicate_step(self, idx: int):
         pass
 
+    def section(self):
+        pass
+
     def write(self, path: str):
         pass
 
-    def iter(self, item="ci_and_tp"):
+    def iter_tp(self, item="ci_and_tp"):
         if item == "ci_and_tp":
             for i, sect_tp_ in enumerate(self.tp):
                 for j, (ci, tp) in enumerate(zip(self.ci, self.tp)):
@@ -146,20 +146,15 @@ class TextBox:
 
     def get_words(self, line: int = None):
         if self.text:
-            string = self.text if line is None else self.lines[line]
             words = re.findall(r'\w+', self.text)
             low = [word.lower() for word in words]
             return low
 
-    def unique(self, line: int = None):
-        if self.words:
-            return set(self.words)
-        else:
-            return set(self.get_words())
-
     def word_count(self, line: int = None):
+        if self.words is None:
+            self.words = self.get_words(line)
         if self.text:
-            freq = dict.fromkeys(self.unique(), 1)
+            freq = dict.fromkeys(set(self.words), 1)
             for word in freq.keys():
                 freq[word] += 1
             return freq
@@ -169,7 +164,7 @@ class TextBox:
         raise NotImplementedError()
 
     def is_valid(self):
-        return self.text != "" and not self.bracketed and not self.is_special
+        return self.text != "" and not self.is_bracketed()
 
     def get_prod_notes(self):
         if self.text:
@@ -190,7 +185,6 @@ class TextBox:
                 if note in phrase:
                     matches.append(phrase)
         return matches
-        
 
     def iter(self, item="step"):
         if item == "word_and_punc":

@@ -625,7 +625,7 @@ class ImpresysWindow(QMainWindow):
             raise Exception("Resized and relocated image beyond original boundaries")
         img = Image.open(image_path) #shell or insertion image
 
-        if (typ=='shell' and sep is True):
+        if (typ=='shell' and sep is True and s_img_size and s_img_loc):
             shell_bound = (s_img_size[0]+s_img_loc[0], s_img_size[1]+s_img_loc[1])
             if (shell_bound[0]>bg_img_size[0] or
                 shell_bound[1]>bg_img_size[1]):
@@ -642,15 +642,15 @@ class ImpresysWindow(QMainWindow):
         ry = float(fg_img_size[1] / bg_img_size[1])
         rx = float(fg_img_size[0] / bg_img_size[0])
 
-        def transform(coords: List[float]) -> List[str]: #-> [top, bottom, left, right]
+        def transform(coords: List[float]) -> List[float]: #-> [top, bottom, left, right]
             out = []
             if len(coords) > 2: # if BOX coordinates (T, B, L, R)
                 for i in range(4):
-                    if i < 2: out.append(str(coords[i] * ry + fg_img_loc[1]))
-                    else: out.append(str(coords[i] * rx + fg_img_loc[0]))
+                    if i < 2: out.append(float(coords[i] * ry + fg_img_loc[1]))
+                    else: out.append(float(coords[i] * rx + fg_img_loc[0]))
             elif len(coords) <= 2: # if CLICK coordinates (X, Y)
-                out.append(str(coords[0] * rx + fg_img_loc[0]))
-                out.append(str(coords[1] * ry + fg_img_loc[1]))
+                out.append(float(coords[0] * rx + fg_img_loc[0]))
+                out.append(float(coords[1] * ry + fg_img_loc[1]))
             return out
 
         def get_set_mouse(mouse_path) -> Tuple[List[float], List[float]]:
@@ -677,6 +677,7 @@ class ImpresysWindow(QMainWindow):
                     scale = float((fg_img_size[0] * fg_img_size[1]) / (bg_img_size[0] * bg_img_size[1]))
                     cbox.find('TextRect').find('FontSize').text = str(int(scale * font_size) + 2)
                 return new, old
+            return None
 
         for chapter in list(root.iter('Chapter')):
             section = chapter.find('XmlName').find('Name').text

@@ -1,5 +1,7 @@
 #TODO; add default values for each
 
+DEMO_RES = (1920, 1080)
+
 STEP_IMG = "StartPicture"
 
 STEP_PROPS = {

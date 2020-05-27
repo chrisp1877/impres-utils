@@ -4,6 +4,7 @@ from dmate.step import Step
 from dmate.audio import SoundBite
 from dmate.script import Script
 from pathlib import Path, PurePath
+import shutil
 
 class Section:
 
@@ -37,15 +38,15 @@ class Section:
     def load(self, elem=None):
         self.id = self.root.find("ID").text
         self.title = self.root.find('XmlName').find('Name').text
-        self.assets = Path(str(self.demo_dir) + "_Assets", self.id)
-        if soundbite := self.root.find("SoundBite"):
-            self.audio_path = Path(str(self.assets), soundbite.find("File").text)
-            self.audio_dur = soundbite.find("DurationTicks").text
+        self.assets = Path(self.demo_dir + "_Assets", self.id)
+        if (soundbite := self.root.find("SoundBite")) is not None:
+            self.audio = SoundBite(elem=soundbite, asset_path=self.assets)
         else:
-            self.audio_path, self.audio_dur = None, None
+            self.audio = None
         self.steps = []
+        demo_parent = str(Path(self.demo_dir).parent)
         for i, step in enumerate(self.root.findall('Steps/Step')):
-            sect_step = Step(elem=step, idx=i, demo_idx=i+self.demo_idx, demo_dir=self.demo_dir)
+            sect_step = Step(elem=step, idx=i, demo_idx=i+self.demo_idx, demo_dir=demo_parent)
             self.steps.append(sect_step)
             self.length += 1
             if i > 0:
@@ -76,6 +77,17 @@ class Section:
         for i, step in enumerate(self):
             step.set_text(ci, tp)
 
+    def set_audio(self, soundbite: SoundBite):
+        source = soundbite.path
+        dest = Path(self.assets, 'SoundBite.mp3')
+        if not self.assets.exists():
+            self.assets.mkdir()
+        if not dest.exists():
+            shutil.copy(str(source), str(dest))
+        self.root.append(soundbite.get_root())
+        self.audio = SoundBite(self.root.find("SoundBite"), asset_path=self.assets)
+        
+
     def iter(self, item="step"):
         if item == "step": #or this doesn't work TODO
             for step in self.steps:
@@ -104,6 +116,12 @@ class Section:
 
     def __len__(self):
         return self.length
+
+    def __str__(self):
+        return self.title
+
+    def __repr__(self):
+        return f'Demo({str(self.path)})'
 
 #-----------------------------------------------------------------
 

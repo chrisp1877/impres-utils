@@ -1,45 +1,46 @@
 from dmate.demo import Demo
 from window.window import ImpresysWindow
-import pickle
-
-#TODO: investigate why there are extra steps? at the end of the demo when iterating through it
-    # "Thakns for watching..." appears at lke sect 47, but demo iterates till 58
+from typing import List, Tuple, Dict
+from pathlib import Path
 
 if __name__ == "__main__":
-    scriptpath = r"C:\Users\Jess\Documents\My Demos\test\Simplify your BYOL Experience with Dedicated Host Management Capabilities in AWS License Manager.docx"
-    demopath = r"C:\Users\Jess\Documents\My Demos\test\Simplify your BYOL Experience with Dedicated Host Management Capabilities in AWS License Manager.demo"
-    audiodir = r"C:\Users\Jess\Documents\My Demos\Solano Eligibility\Audio"
-    
-    demo = Demo(demopath, scriptpath, audiodir)
-    #demo_pickle = pickle.dumps(demo)
-    #steps = [sect for sect in demo.sections]
-    #sects = [step for sect in demo.sections for step in sect.steps]
-    print(len(demo), len(demo.sections), [len(sect) for sect in demo.sections])
-    #%%
-            
-    words = {}
-    past = False
-    for sect in demo:
-        for step in sect:
-            if step.tp.text:
-                word_count = step.tp.word_count()
-                for word in word_count:
-                    if word in words:
-                        words[word] += 1
-                    else:
-                        words[word] = 1
-            # print(step.tp.word_count())
-            # print(step.tp.text)
-            # if "Thanks for watching".lower() in step.tp.text.lower():
-            #     past = True
-            # if past:
-            #     print(step.prop)
+    scriptpath = r"C:\Users\Jess\Documents\My Demos\test2\RSM-SC - Eligibility [R1 - V3].docx"
+    demopath = r"C:\Users\Jess\Documents\My Demos\Solano Case Management\RSM-SC - Case Management [R1 - V5].demo"
+    audiodir = r"C:\Users\Jess\Documents\My Demos\test1sec\Audio"    
 
-    # %% 
-    print(len(demo.sections))
-    print(words)
-    freq_word = ()
-    # %%
+    demo = Demo(path=demopath, is_sectioned=True)
+    #demo.add_audio()
+    #demo.write()
+
+    for section in demo:
+        for step in section:
+            print(step.animated)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    # for sect in demowaudio:
+    #     if sect.audio is not None:
+    #         if Path(sect.audio.path).exists():
+    #             print(sect.audio)
+
 
 """
     app = QApplication(sys.argv)
@@ -61,3 +62,15 @@ if __name__ == "__main__":
 
 # things I can't seem to do:
 # Create a new step with unique click instructions/tps. Or manipulate tps at all
+
+
+#TODO
+"""
+* Implement capture automation, set up initial list of links, set up webbrowser module to go through them, capture img adn hvoer
+* Use decorator in sectioning function to store the next few steps or whatever and have easy acccess
+* SELENIUM!
+* Checkbox GUI fro demo setep selection
+* Start planning out Django or Flask or FastAPI web implemenation
+* Start learning Rust
+* Look into asyncio / concurrent processes?
+"""
