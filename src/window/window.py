@@ -6,7 +6,9 @@ from PyQt5.QtWidgets import (
     QLabel, QLineEdit, QMenu, QMenuBar, QPushButton, QSpinBox, QTextEdit,
     QVBoxLayout, QFileDialog, QAction, QMessageBox, QFrame, QStatusBar,
     QTabWidget, QSpacerItem, QSizePolicy, QRadioButton, QProgressBar,
-    QButtonGroup, QDoubleSpinBox, QGraphicsScene, QProgressDialog
+    QButtonGroup, QDoubleSpinBox, QGraphicsScene, QProgressDialog, QListView,
+    QListWidget, QListWidgetItem, QTableView
+    
 )
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import pyqtSlot, Qt, QFileSelector
@@ -14,15 +16,28 @@ import lxml.etree as ET
 from PIL import Image
 from typing import List, Tuple
 from pathlib import Path
+from dmate.demo import Demo
+from dmate.script import Script
+from dmate.audio import Audio
 
 SCRIPTDIR = os.path.dirname(os.path.realpath(__file__))
+
+class ImpresysApplication(QApplication):
+
+    def __init__(self):
+        self.app = QApplication(sys.argv)
+        self.window = ImpresysWindow()
+        self.window.show()
+        self.app.exec_()
 
 class ImpresysWindow(QMainWindow):
 
     def __init__(self):
         super().__init__()
 
-        self.DEMO_PATH = None
+        self.DEMO_PATH = ""
+        self.SCRIPT_PATH = ""
+        self.AUDIO_PATH = ""
         self.IMG_PATH = None
         self.SHELL_PATH = None
         self.SECTS = list()
@@ -35,17 +50,77 @@ class ImpresysWindow(QMainWindow):
         self.title = 'Impresys Utilities'
         self.left = 10
         self.top = 10
-        self.width = 450
+        self.width = 950
         self.height = 550
-        self.width_with_rightpane = 900
         self.setupUi()
 
     def setupUi(self):
         self.setWindowTitle(self.title)
         self.setGeometry(self.left, self.top, self.width, self.height)
         self.setWindowIcon(QIcon(SCRIPTDIR+os.path.sep+'logo.png'))
+        
+        self.demo = None
+        self.script = None
+        self.audio = None
+
         self.centralwidget = QWidget(self)
-        self.gridLayout = QGridLayout(self.centralwidget)
+        self.col_layout = QHBoxLayout(self.centralwidget)
+        self.tab_widget = QTabWidget(self.centralwidget)
+        self.entry_layout = QVBoxLayout()
+        self.demo_pane = QVBoxLayout()
+        self.demo_title = "No demo loaded"
+        self.demo_list = QListWidget()
+        self.demo_label = QLabel(self.demo_title)
+        self.demo_pane.addWidget(self.demo_label)
+        self.demo_pane.addWidget(self.demo_list)
+        self.col_layout.addLayout(self.entry_layout)
+        self.col_layout.addWidget(self.demo_list)
+
+        self.demo_layout = QHBoxLayout()
+        self.demo_label = QLabel()
+        self.demo_label.setText("Enter .demo file location:")
+        self.demo_tbox = QLineEdit()
+        self.demo_tbox.resize(150, 30)
+        self.demo_btn = QPushButton('Browse...')
+        self.demo_btn.setStatusTip('Browse for .demo file')
+        self.demo_btn.clicked.connect(self.browse_demo)
+        self.demo_layout.addWidget(self.demo_label)
+        self.demo_layout.addStretch()
+        self.demo_layout.addWidget(self.demo_tbox)
+        self.demo_layout.addWidget(self.demo_btn)
+
+        self.script_layout = QHBoxLayout()
+        self.script_label = QLabel()
+        self.script_label.setText("Enter script .docx location:")
+        self.script_tbox = QLineEdit()
+        self.script_tbox.resize(150, 30)
+        self.script_btn = QPushButton('Browse...')
+        self.script_btn.setStatusTip('Browse for .docx file')
+        self.script_btn.clicked.connect(self.browse_script)
+        self.script_layout.addWidget(self.script_label)
+        self.script_layout.addStretch()
+        self.script_layout.addWidget(self.script_tbox)
+        self.script_layout.addWidget(self.script_btn)
+
+        self.audio_layout = QHBoxLayout()
+        self.audio_label = QLabel()
+        self.audio_label.setText("Enter audio folder location:")
+        self.audio_tbox = QLineEdit()
+        self.audio_tbox.resize(150, 30)
+        self.audio_btn = QPushButton('Browse...')
+        self.audio_btn.setStatusTip('Browse for audio folder')
+        self.audio_btn.clicked.connect(self.browse_audio)
+        self.audio_layout.addWidget(self.audio_label)
+        self.audio_layout.addStretch()
+        self.audio_layout.addWidget(self.audio_tbox)
+        self.audio_layout.addWidget(self.audio_btn)
+
+        self.entry_layout.addLayout(self.demo_layout)
+        self.entry_layout.addLayout(self.script_layout)
+        self.entry_layout.addLayout(self.audio_layout)
+        self.entry_layout.addWidget(self.tab_widget)
+
+
         self.addStatusBar()
         self.addMenuBar()
         self.configPreview()
@@ -54,10 +129,10 @@ class ImpresysWindow(QMainWindow):
         self.setSecondTab()
         self.setXmlTab()
         self.progBar = QProgressBar()
-        self.gridLayout.addWidget(self.tabWidget, 0, 0, 1, 1)
-        #self.gridLayout.addWidget(self.progBar, 1, 1, 1, 1)
+        self.entry_layout.addWidget(self.tab_widget)
+        #self.entry_layout.addWidget(self.progBar, 1, 1, 1, 1)
         self.setCentralWidget(self.centralwidget)
-        self.tabWidget.setCurrentIndex(0)
+        self.tab_widget.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(self)
 
     def addMenuBar(self):
@@ -116,8 +191,8 @@ class ImpresysWindow(QMainWindow):
         self.shellLayout = QVBoxLayout()
 
     def setTabs(self):
-        self.tabWidget = QTabWidget(self.centralwidget)
-        self.tabWidget.setObjectName("tabWidget")
+        
+        self.tab_widget.setObjectName("tabWidget")
         self.shellTab = QWidget()
         self.shellTab.setObjectName("shellTab")
         self.shellTab.setStatusTip("Performing shelling on demo assets")
@@ -150,20 +225,6 @@ class ImpresysWindow(QMainWindow):
             "Enter new size of asset image in shell:"
         ]
 
-        d = QHBoxLayout()
-        demo_dir_label = QLabel(self.shellTab)
-        demo_dir_label.setText("Enter .demo file location:")
-        self.demo_tbox1 = QLineEdit(self.shellTab)
-        self.demo_tbox1.resize(100, 30)
-        self.browse_demo_btn = QPushButton('Browse...', self.shellTab)
-        self.browse_demo_btn.setStatusTip('Browse for .demo file')
-        self.browse_demo_btn.clicked.connect(self.browse_demo)
-        d.addWidget(demo_dir_label)
-        d.addStretch()
-        d.addWidget(self.demo_tbox1)
-        d.addWidget(self.browse_demo_btn)
-
-        self.shellForm.addRow(d)
         self.image_paste_form(shell_labels, self.shellTab, self.shellForm)
 
         self.shellForm.addRow(QLabel())
@@ -256,8 +317,8 @@ class ImpresysWindow(QMainWindow):
         self.shellLayout.addLayout(self.imgPreviewLayout)
         self.shellTab.setLayout(self.shellLayout)
 
-        self.tabWidget.addTab(self.shellTab, "")
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.shellTab), "Shell")
+        self.tab_widget.addTab(self.shellTab, "")
+        self.tab_widget.setTabText(self.tab_widget.indexOf(self.shellTab), "Shell")
 
     def setSecondTab(self):
         self.insTab = QWidget()
@@ -277,26 +338,12 @@ class ImpresysWindow(QMainWindow):
             "Enter new size of insertion image:"
         ]
 
-        d = QHBoxLayout()
-        demo_dir_label = QLabel(self.insTab)
-        demo_dir_label.setText("Enter .demo file location:")
-        self.demo_tbox2 = QLineEdit(self.insTab)
-        self.demo_tbox2.resize(100, 30)
-        self.browse_demo_btn = QPushButton('Browse...', self.insTab)
-        self.browse_demo_btn.setStatusTip('Browse for .demo file')
-        self.browse_demo_btn.clicked.connect(self.browse_demo)
-        d.addWidget(demo_dir_label)
-        d.addStretch()
-        d.addWidget(self.demo_tbox2)
-        d.addWidget(self.browse_demo_btn)
-
-        self.insForm.addRow(d)
         self.image_paste_form(ins_labels, self.insTab, self.insForm)
 
         self.shellForm.addRow(QLabel())
 
-        self.tabWidget.addTab(self.insTab, "")
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.insTab), "Insert")
+        self.tab_widget.addTab(self.insTab, "")
+        self.tab_widget.setTabText(self.tab_widget.indexOf(self.insTab), "Insert")
         self.insSects = QLineEdit(self.insTab)
         #self.insSects.setPlaceholderText('All')
         self.to_ins = self.insSects.text().split(",") #@FIELD
@@ -312,20 +359,6 @@ class ImpresysWindow(QMainWindow):
         self.xmlForm.setHorizontalSpacing(10)
         self.xmlForm.setContentsMargins(25, 25, 25, 25)
 
-        d = QHBoxLayout()
-        demo_dir_label = QLabel(self.xmlTab)
-        demo_dir_label.setText("Enter .demo file location:")
-        self.demo_tbox3 = QLineEdit(self.xmlTab)
-        self.demo_tbox3.resize(100, 30)
-        self.browse_demo_btn = QPushButton('Browse...', self.xmlTab)
-        self.browse_demo_btn.setStatusTip('Browse for .demo file')
-        self.browse_demo_btn.clicked.connect(self.browse_demo)
-        d.addWidget(demo_dir_label)
-        d.addStretch()
-        d.addWidget(self.demo_tbox3)
-        d.addWidget(self.browse_demo_btn)
-
-        self.xmlForm.addRow(d)
         self.xmlEditor = QTextEdit(self.xmlTab)
         self.xmlEditor.setStatusTip("This is where the XML bulk editor will live...")
         self.xmlForm.addRow(self.xmlEditor)
@@ -342,8 +375,8 @@ class ImpresysWindow(QMainWindow):
         bot.addWidget(save_btn)
         self.xmlForm.addRow(bot)
 
-        self.tabWidget.addTab(self.xmlTab, "")
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.xmlTab), "XML")
+        self.tab_widget.addTab(self.xmlTab, "")
+        self.tab_widget.setTabText(self.tab_widget.indexOf(self.xmlTab), "XML")
 
 
     #----------UI ELEMENTS-----------------#
@@ -467,20 +500,38 @@ class ImpresysWindow(QMainWindow):
         form.addRow(bot)
 
     # ------ FUNCTIONS --------------------#
-    @pyqtSlot( )
-    def addRandomTextSlot( self ):
-        self.textEdit.insertPlainText( "Hello World!" )
 
     def browse_demo(self, tnum):
         options = QFileDialog.Options()
         options |= QFileDialog.DontUseNativeDialog
         fileName, _ = QFileDialog.getOpenFileName(self,"Browse for .demo files", "","Demo files (*.demo);;All Files (*)", options=options)
-        if fileName:
-            print(fileName)
-        self.demo_tbox1.setText(fileName)
-        self.demo_tbox2.setText(fileName)
-        self.demo_tbox3.setText(fileName)
+        self.demo_tbox.setText(fileName)
         self.DEMO_PATH = fileName
+        self.load_demo()
+
+    def browse_script(self, tnum):
+        options = QFileDialog.Options()
+        options |= QFileDialog
+        fileName, _ = QFileDialog.getOpenFileName(self,"Browse for .docx files", "","Word files (*.docx);;All Files (*)", options=options)
+        self.script_tbox.setText(fileName)
+        self.SCRIPT_PATH = fileName
+        self.load_demo()
+
+    def browse_audio(self, tnum):
+        options = QFileDialog.Options()
+        options |= QFileDialog
+        folderName, _ = QFileDialog.getExistingDirectory(self,"Browse for audio folder", "","All Files (*)", options=options)
+        self.audio_tbox.setText(folderName)
+        self.AUDIO_PATH = folderName
+        self.load_demo()
+
+    def load_demo(self):
+        self.demo = Demo(path=self.DEMO_PATH, script_path=self.SCRIPT_PATH, audio_dir=self.AUDIO_PATH)
+        self.demo_title = self.demo.title
+        for sect in self.demo:
+            self.demo_list.addItem(QListWidgetItem(sect.title, self.demo_list))
+            for step in sect:
+                self.demo_list.addItem(QListWidgetItem(step.name, self.demo_list))
 
     def browse_img(self):
         options = QFileDialog.Options()
@@ -725,4 +776,33 @@ class ImpresysWindow(QMainWindow):
                                 print("INSERTED: Section: "+section+", Step: "+str(i)+", image: "+"t")
 
         demo.write(demo_path, xml_declaration=True, encoding='utf-8')
+
+class BrowseDemo(QHBoxLayout):
+
+    def __init__(self, window):
+        self.window = window
+        
+
+    @pyqtSlot()
+    def browse(self):
+        options = QFileDialog.Options()
+        options |= QFileDialog.DontUseNativeDialog
+        fileName, _ = QFileDialog.getOpenFileName(self,"Browse for .demo files", "","Demo files (*.demo);;All Files (*)", options=options)
+        self.tbox.setText(fileName)
+        self.window.DEMO_PATH = fileName
+
+class ShellTab(QWidget):
+
+    def __init__(self):
+        pass
+
+class InsertTab(QWidget):
+
+    def __init__(self):
+        pass
+
+class AudioTab(QWidget):
+
+    def __init__(self):
+        pass
 

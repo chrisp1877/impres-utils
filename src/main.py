@@ -1,54 +1,23 @@
 from dmate.demo import Demo
-from window.window import ImpresysWindow
+from window.window import ImpresysWindow, ImpresysApplication
 from typing import List, Tuple, Dict
 from pathlib import Path
+from etc.utils import timefunc
+from collections import deque
+from copy import deepcopy
 
 if __name__ == "__main__":
+
     scriptpath = r"C:\Users\Jess\Documents\My Demos\test2\RSM-SC - Eligibility [R1 - V3].docx"
-    demopath = r"C:\Users\Jess\Documents\My Demos\Solano Case Management\RSM-SC - Case Management [R1 - V5].demo"
-    audiodir = r"C:\Users\Jess\Documents\My Demos\test1sec\Audio"    
-
-    demo = Demo(path=demopath, is_sectioned=True)
-    #demo.add_audio()
-    #demo.write()
-
-    for section in demo:
-        for step in section:
-            print(step.animated)
+    demopath = r"C:\Users\Jess\Documents\My Demos\test2\RSM-SC - Eligibility [R1 - V3].demo"
+    audiodir = r"C:\Users\Jess\Documents\My Demos\test1sec\Audio" 
+    demo = Demo(path=demopath, script_path=scriptpath, audio_dir=audiodir, is_sectioned=True)
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    # for sect in demowaudio:
-    #     if sect.audio is not None:
-    #         if Path(sect.audio.path).exists():
-    #             print(sect.audio)
-
-
-"""
-    app = QApplication(sys.argv)
-    MainWindow = ImpresysWindow()
-    MainWindow.show()
-    sys.exit(app.exec_())
+    app = ImpresysApplication()
     
-"""
+
 # TODO
 # Edge detection in shelling? To detect corners to automate shelling
 # Automatic sectioning based on talking points

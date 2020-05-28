@@ -120,8 +120,8 @@ BOX_PROPS = {
 }
 
 DIRS = {
-    "y1": {"tag": "Top", "type": int}, 
-    "y0": {"tag": "Bottom", "type": int}, 
+    "y0": {"tag": "Top", "type": int}, 
+    "y1": {"tag": "Bottom", "type": int}, 
     "x0": {"tag": "Left", "type": int}, 
     "x1": {"tag": "Right", "type": int}
 }

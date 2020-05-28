@@ -5,6 +5,7 @@ from typing import List, Tuple
 import sys
 from etc.utils import validate_path, logger
 import re
+import nltk
 
 class Script:
 

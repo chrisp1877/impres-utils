@@ -7,13 +7,14 @@ import dmate.demo_tags as dt
 from dmate.audio import SoundBite
 from dmate.script import TextBox
 import shutil
+from copy import deepcopy
 
 class Step:
 
     #TODO check if step delaya is None if not specified
     def __init__(self, 
                 elem = None,
-                next_step = None,
+                copy: bool = False,
                 demo_dir: str = None,
                 idx: int = -1,
                 demo_idx: int = -1,
@@ -25,34 +26,30 @@ class Step:
                 animated: bool = False,
                 guided: bool = False,
                 step_delay: float = 1.0):
-        self.root = elem
-        self.next = self.root.getnext()
+        if not copy:
+            self.root = elem
+        else:
+            self.root = deepcopy(elem)
         self.idx = idx
         self.demo_idx = demo_idx
         self.demo_dir = demo_dir
-        if elem is None:
-            self.asset_path = ""
-            self.id = ""
-            self.set_image(img_path, hover_img_path)
         self.tp, self.ci = TextBox(talking_pt), TextBox(click_instr)
         self.loaded = self.load()
 
     def load(self, prop_key = None, set_init_props = True, set_box_props = True, ci="", tp=""):
         self.ci.text = ci if ci else self.ci.text
         self.tp.text = tp if tp else self.tp.text
-        props = self.root.find("StartPicture")
-        self.prop = {k:None for k in {*dt.STEP_PROPS}}
-        self.box = {k:dict.fromkeys({*v["props"], *dt.DIRS}, None) for k, v in dt.BOX_PROPS.items()}
-        self.assets = Path(self.demo_dir, props.find("AssetsDirectory").text)
-        self.img = PurePath(self.assets, props.find("PictureFile").text)
-        self.time = props.find("Time").text
-        if (hover := props.find("MouseEnterPicture")) is not None and hover.text is not None:
+        self.props = self.root.find("StartPicture")
+        self.assets = Path(self.demo_dir, self.props.find("AssetsDirectory").text)
+        self.img = PurePath(self.assets, self.props.find("PictureFile").text)
+        self.time = self.props.find("Time").text
+        if (hover := self.props.find("MouseEnterPicture")) is not None and hover.text is not None:
             self.hover = PurePath(self.assets, hover.find("PictureFile").text)
             self.hover_time = hover.find("Time").text
             self.mouse_hover = (float(hover.find(dt.MOUSE_X).text), float(hover.find(dt.MOUSE_Y).text))
         else:
             self.hover = None
-        self.mouse = (float(props.find(dt.MOUSE_X).text), float(props.find(dt.MOUSE_Y).text))
+        self.mouse = (float(self.props.find(dt.MOUSE_X).text), float(self.props.find(dt.MOUSE_Y).text))
         if (soundbite := self.root.find("SoundBite")) is not None:
             self.audio = SoundBite(elem=soundbite, asset_path=str(self.assets))
         else:
@@ -62,35 +59,29 @@ class Step:
                 prop_tag, prop_type = prop_dict["tag"], prop_dict["type"]
                 prop_val = self.root.find(prop_tag)
                 if prop_val is not None and (prop_text := prop_val.text) is not None:
-                    self.prop[prop] = prop_type(prop_text)
                     setattr(self, prop, prop_type(prop_text))
                 else:
-                    self.prop[prop] = None
                     setattr(self, prop, None)
         if set_box_props: #TODO make work
             for box_key, box_dict in dt.BOX_PROPS.items():
                 setattr(self, box_key, {k:[] for k in {*box_dict["props"], *dt.DIRS}})
-                if props.find(tag := box_dict["tag"]) is not None:
+                if (self.props.find(tag := box_dict["tag"])) is not None:
                     box_props = {**box_dict["props"], **dt.DIRS}
-                    for box in props.findall(tag+"/"+tag[:-1]):
+                    for box in self.props.findall(tag+"/"+tag[:-1]):
                         for prop, prop_vals in box_props.items():
                             prop_tag, prop_type = prop_vals["tag"], prop_vals["type"]
-                            box_prop = box.find(prop_tag)
-                            if box_prop is not None and (box_text := box_prop.text) is not None:
-                                getattr(self, box_key)[prop].append(prop_type(box_text))
-                            else:
-                                self.box[box_key][prop].append(None)
+                            try:
+                                box_text = prop_type(box.find(prop_tag).text)
+                                getattr(self, box_key)[prop].append(box_text)
+                            except:
+                                pass
                 if box_key == 'hotspot':
                     if (getattr(self, box_key)['x1'][0] == dt.DEMO_RES[0] and 
-                        getattr(self, box_key)['y0'][0] == dt.DEMO_RES[1]):
+                        getattr(self, box_key)['y1'][0] == dt.DEMO_RES[1]):
                         self.animated = True
                     else:
                         self.animated = False
         self.loaded = True
-
-    #@classmethod
-    def from_step(self, step):
-        return cls
 
     def set_box_dims(self, box: str, x: Tuple[int, int], y: Tuple[int, int]):
         """
@@ -133,15 +124,9 @@ class Step:
         if tp != "":
             self.tp.words = self.tp.get_words()
 
-    def set_image(self, img: str, hover: str = ""):
-        # BACK UP IMAGE TO ANOTHER FOLDER BEFORE SAVING
-        self.img = PurePath(img)
-        pass
-
     def set_audio(self, soundbite: SoundBite):
         source = soundbite.path
         dest = Path(self.assets, 'SoundBite.mp3')
-        
         if not self.assets.exists():
             self.assets.mkdir()
         if not dest.exists():
@@ -149,7 +134,26 @@ class Step:
         index = self.root.index(self.root.find("StepFlavor"))+1
         self.root.insert(index, soundbite.get_root())
         self.audio = SoundBite(self.root.find("SoundBite"), asset_path=str(self.assets))
+
+    def set_image(self, img_path: str):
+        # BACK UP IMAGE TO ANOTHER FOLDER BEFORE SAVING
+        if not self.assets.exists():
+            self.assets.mkdir()
+        if Path(self.img).exists():
+            backup = Path(self.img.parent, self.img.name+"_backup.png") #check this
+            shutil.copy(str(self.img), str(backup))
+        shutil.copy(img_path, str(self.img))
         
+    def set_animated(self):
+        getattr(self, 'hotspot')['x0'][0] = 0
+        getattr(self, 'hotspot')['x1'][0] = dt.DEMO_RES[0]
+        getattr(self, 'hotspot')['y0'][0] = 0
+        getattr(self, 'hotspot')['y1'][0] = dt.DEMO_RES[1]
+        for dir_key, ddict in dt.DIRS.items():
+            hspot = self.props.find(f"Hotspots/Hotspot/{ddict[dir_key]['tag']}")
+            hspot.text = str(getattr(self, 'hotspot')[dir_key][0])
+        setattr(self, 'has_mouse', False)
+        self.root.find(dt.STEP_PROPS['has_mouse']['tag']).text = 'false'
 
     def remove_audio(self):
         pass

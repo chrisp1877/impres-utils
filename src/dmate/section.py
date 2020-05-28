@@ -3,14 +3,20 @@ from typing import List, Tuple
 from dmate.step import Step
 from dmate.audio import SoundBite
 from dmate.script import Script
+from etc.utils import timefunc
 from pathlib import Path, PurePath
+from copy import deepcopy
 import shutil
+from collections import deque
+
+#TODO implement steps in deque
+#TODO: Check performance of deque vs list
 
 class Section:
 
     def __init__(self,
                  elem = None,
-                 next_sect = None,
+                 copy: bool = False,
                  demo_dir: str = None,
                  idx: int = -1, 
                  demo_idx: int = -1, 
@@ -21,21 +27,25 @@ class Section:
         Object to hold section data. If initializing from elem in etree, must provide
         elem, overall index in demo (idx), and section index (sect_i).
         """
-        self.root = elem
-        self.next = next
-        self.demo_idx = idx
+        if not copy:
+            self.root = elem
+            self.children = self.root.find("Steps")
+        else:
+            self.root = deepcopy(elem)
+            self.children = self.root.find("Steps")
+        self.idx = idx
+        self.demo_idx = demo_idx
         self.length = 0
         self.demo_dir = demo_dir
-        self.idx = idx
         if elem is None:
             self.demo_idx = demo_idx
             self.idx = idx
-            self.title = title if title != "" else ("Section " + str(idx))
+            self.title = title if title != "" else "Section %s" % str(idx)
         self.is_special = is_special
         self.steps: List[Step] = []
         self.load()
         
-    def load(self, elem=None):
+    def load(self):
         self.id = self.root.find("ID").text
         self.title = self.root.find('XmlName').find('Name').text
         self.assets = Path(self.demo_dir + "_Assets", self.id)
@@ -43,18 +53,41 @@ class Section:
             self.audio = SoundBite(elem=soundbite, asset_path=self.assets)
         else:
             self.audio = None
-        self.steps = []
         demo_parent = str(Path(self.demo_dir).parent)
+        self.steps = deque()
         for i, step in enumerate(self.root.findall('Steps/Step')):
             sect_step = Step(elem=step, idx=i, demo_idx=i+self.demo_idx, demo_dir=demo_parent)
             self.steps.append(sect_step)
             self.length += 1
-            if i > 0:
-                self.steps[i-1].next = self.steps[i]
         self.loaded = True
 
-    def append_step(self, step: Step):
-        pass
+    def extend(self, steps: deque):
+        self.steps.extend(steps)
+        self.children.extend(step.root for step in steps)
+
+    def append(self, step: Step):
+        self.steps.append(step)
+        self.children.append(deepcopy(step.root))
+
+    def pop(self):
+        pop = self.steps.pop()
+        self.children.remove(pop.root)
+        return pop
+
+    def popleft(self):
+        pop = self.steps.popleft()
+        self.children.remove(pop.root)
+
+    def duplicate_step(self, idx: int, as_pacing: bool = False):
+        dupe = deepcopy(self.steps[idx])
+        if as_pacing:
+            dupe.set_animated()
+        self.steps.insert(idx, dupe)
+        self.children.insert(idx, dupe.root)
+
+    def delete_step(self, idx: int):
+        self.steps.remove(self.steps[idx])
+        self.children.remove(self.children[idx])
 
     def insert_step(self, step: Step, before=True):
         pass
@@ -100,7 +133,7 @@ class Section:
 
     # make this a generator?
     def __iter__(self):
-        return SectionIterator(self)
+        return iter(self.steps)
     
     def __next__(self):
         pass
@@ -121,7 +154,7 @@ class Section:
         return self.title
 
     def __repr__(self):
-        return f'Demo({str(self.path)})'
+        return(f'''Section({str(self.title)}, idx={str(self.idx)}, demo_idx={str(self.demo_idx)})''')
 
 #-----------------------------------------------------------------
 

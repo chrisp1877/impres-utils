@@ -9,7 +9,9 @@ from dmate.section import Section
 from dmate.step import Step
 from dmate.script import Script, TextBox
 from dmate.audio import Audio
-from etc.utils import validate_path, time, logger
+from etc.utils import validate_path, timefunc, logger
+from collections import deque
+import shutil
 
 #----------------------------DEMO------------------------------------#
 
@@ -19,25 +21,27 @@ class Demo:
                 path: str = "", 
                 script_path: str = "", 
                 audio_dir: str = "", 
-                is_sectioned: bool = False):
+                is_sectioned: bool = False,
+                audio_attached: bool = False):
         self.file = path
         self.script_path = script_path
         self.audio_dir = audio_dir
         self.is_sectioned = is_sectioned
+        self.audio_attached = audio_attached
         self.title = "" #TODO    
         self.resolution = (1920, 1080) #TODO
         self.len, self.sect_len = 0, 0
         self.sections: List[Section] = []
         self.steps: List[Step] = []
-        self.load(path)
-        # try:
-        #     self.loaded = self.load(path)
-        # except BaseException as exc:
-        #     logger.error("Demo failed to import. %s", str(exc))
-        #     self.loaded = False
+        try:
+            self.loaded = self.load(path)
+        except BaseException as exc:
+            logger.error("Demo failed to import. %s", str(exc))
+            self.loaded = False
 
-    @validate_path
-    def load(self, path: str = ""):
+    #@validate_path #~329ms
+    @timefunc
+    def load(self, path: str = ""): #w/o dq: 584ms, dq:
         """
         Takes a directory path pointing to a DemoMate script .doc file as input
         Returns a list of tuples for each step in demo, where first element of pair contains
@@ -52,7 +56,7 @@ class Demo:
             return False
         else:
             self.dir = str(Path(path).parent)
-            self.assets = Path(Path(path + "_Assets"))
+            self.assets = Path(path + "_Assets")
             self.sections = []
             self.id = self.root.find("ID").text
             self.title = self.root.find("DemoName").text
@@ -61,6 +65,7 @@ class Demo:
                 self.len += len(section)
                 self.sections.append(section)
             self.steps =[step for sect in self for step in sect]
+            print(f"Imported demo with {len(self)} sections and {len(self.steps)} steps.")
         if (script_path := self.script_path):
             self.script = Script(script_path)
             if self.script.loaded:
@@ -122,6 +127,8 @@ class Demo:
     def add_audio(self, start:int = 0, end: int = -1):
         if not self.is_sectioned:
             self.process_sections()
+        if self.audio_attached:
+            return
         #TODO: Implement functionality to PROMPT to use alternates when they appear instead of skipping
         audio_i = 0
         for i, (step, is_step_audio) in enumerate(self.iter_audio_step()):
@@ -139,11 +146,10 @@ class Demo:
                     if sect.demo_idx == step.demo_idx:
                         sect.set_audio(sb)
             audio_i += 1
-
-    # def remove_audio(self, start: int = 0, end: int = -1):
-    #     if not self.is_sect
+        self.audio_attached = True
 
     def set_text(self, script: Script = None):
+        print('setting text')
         if script is None:
             script = self.script
         for step, (ci, tp) in zip(self.iter_step(), script):
@@ -313,10 +319,23 @@ class Demo:
             if tp:
                 pass
 
-    def write(self, path: str = ""):
+    def write(self, path: str = "", append: str = ""):
         tree = ET.ElementTree(self.root)
         if path:
             tree.write(path, pretty_print=True, xml_declaration=True, encoding='utf-8')
+        elif append:
+            new_path_name = self.path.name + append
+            new_path = Path(self.dir, new_path_name)
+            new_assets = Path(self.dir, new_path_name+"_Assets")
+            tree.write(str(new_path), pretty_print=True, xml_declaration=True, encoding='utf-8')
+            new_assets.mkdir()
+            try:
+                shutil.copytree(str(self.assets), str(new_assets))
+            except:
+                print("Couldn't copy")
+            else:
+                self.assets = new_assets
+                self.path = new_path
         else:
             tree.write(str(self.path), pretty_print=True, xml_declaration=True, encoding='utf-8')
 

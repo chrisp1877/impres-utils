@@ -1,6 +1,6 @@
 from functools import wraps
 from pathlib import Path
-import time
+import timeit
 import logging
 
 # Note: Only use Paths for when things are being opened.
@@ -52,11 +52,10 @@ def debug(func):
         return value
     return wrapper_debug
 
-def timer(func):
-    def time(*args):
-        ts = time.time()
-        result = func(*args)
-        te = time.time()
-        print('%r  %2.2f ms' % (func.__name__, (te-ts) * 1000))
-        return result
-    return time
+def timefunc(func):
+    def wrap(*args):
+        t0 = timeit.default_timer()
+        func(*args)
+        t1 = timeit.default_timer()
+        print(f"Function '{func.__qualname__}, args: {args}:' took {1000*(t1-t0)}ms.")
+    return wrap
