@@ -7,10 +7,10 @@ from PyQt5.QtWidgets import (
     QVBoxLayout, QFileDialog, QAction, QMessageBox, QFrame, QStatusBar,
     QTabWidget, QSpacerItem, QSizePolicy, QRadioButton, QProgressBar,
     QButtonGroup, QDoubleSpinBox, QGraphicsScene, QProgressDialog, QListView,
-    QListWidget, QListWidgetItem, QTableView
+    QListWidget, QListWidgetItem, QTableView, QHeaderView, QTreeView
     
 )
-from PyQt5.QtGui import QIcon
+from PyQt5.QtGui import QIcon, QStandardItemModel, QStandardItem
 from PyQt5.QtCore import pyqtSlot, Qt, QFileSelector
 import lxml.etree as ET
 from PIL import Image
@@ -19,6 +19,7 @@ from pathlib import Path
 from dmate.demo import Demo
 from dmate.script import Script
 from dmate.audio import Audio
+import dmate.demo_tags as dt
 
 SCRIPTDIR = os.path.dirname(os.path.realpath(__file__))
 
@@ -69,12 +70,15 @@ class ImpresysWindow(QMainWindow):
         self.entry_layout = QVBoxLayout()
         self.demo_pane = QVBoxLayout()
         self.demo_title = "No demo loaded"
-        self.demo_list = QListWidget()
-        self.demo_label = QLabel(self.demo_title)
-        self.demo_pane.addWidget(self.demo_label)
-        self.demo_pane.addWidget(self.demo_list)
+        self.demo_tree = QTreeView()
+        self.demo_info = QTreeView()
+        self.demo_info.setFixedHeight(225)
+        #self.demo_title = QLabel("No demo loaded")
+        #self.demo_pane.addWidget(self.demo_title)
+        self.demo_pane.addWidget(self.demo_tree)
+        self.demo_pane.addWidget(self.demo_info)
         self.col_layout.addLayout(self.entry_layout)
-        self.col_layout.addWidget(self.demo_list)
+        self.col_layout.addLayout(self.demo_pane)
 
         self.demo_layout = QHBoxLayout()
         self.demo_label = QLabel()
@@ -527,11 +531,76 @@ class ImpresysWindow(QMainWindow):
 
     def load_demo(self):
         self.demo = Demo(path=self.DEMO_PATH, script_path=self.SCRIPT_PATH, audio_dir=self.AUDIO_PATH)
-        self.demo_title = self.demo.title
-        for sect in self.demo:
-            self.demo_list.addItem(QListWidgetItem(sect.title, self.demo_list))
-            for step in sect:
-                self.demo_list.addItem(QListWidgetItem(step.name, self.demo_list))
+        self.demo_title = QLabel(self.demo.title)
+        self.demo_model = QStandardItemModel(self.demo_tree)
+        self.demo_info = QStandardItemModel(self.demo_info)
+        self.demo_info.setColumnCount(2)
+        self.demo_model.setHorizontalHeaderLabels([self.demo.title, "Has TP", "Animated"])
+        for i, sect in enumerate(self.demo):
+            section = QStandardItem(sect.title)
+            section.setColumnCount(3)
+            section.setCheckable(True)
+            section.setDragEnabled(True)
+            section.setSelectable(True)
+            section.setEditable(True)
+            section.setDropEnabled(True)
+            for j, step in enumerate(sect):
+                qstep = QStandardItem(step.name)
+                qstep.setCheckable(True)
+                qstep.setSelectable(True)
+                qstep.setDragEnabled(True)
+                qstep.setDropEnabled(True)
+                qtp = QStandardItem(str(step.tp.text is not ""))
+                qan = QStandardItem(str(step.animated))
+                section.appendRow([qstep, qtp, qan])
+                section.setChild(j, qstep)
+            self.demo_model.appendRow(section)
+        self.demo_model.itemChanged.connect(self.displayInfo)
+        self.demo_tree.setModel(self.demo_model)
+            
+    def displayInfo(self, item):
+        index = self.demo_model.indexFromItem(item).row()
+        Q = lambda Q: [QStandardItem(q) for q in Q]
+        if item.hasChildren():
+            sect = None
+            idx = 0
+            for section in self.demo:
+                if section.demo_idx == int(index) or section.idx == index:
+                    sect = section
+                idx += len(section) + 1
+            self.demo_info.appendRow([QStandardItem("Title: "), QStandardItem(sect.title)])
+            self.demo_info.appendRow([QStandardItem("ID: "), QStandardItem(sect.id)])
+            self.demo_info.appendRow(Q(["Demo index: ", sect.demo_idx]))
+            self.demo_info.appendRow(Q(["Section index: ", sect.sect_idx]))
+            self.demo_info.appendRow(Q(["Assets: ", str(sect.assets)]))
+            self.demo_info.appendRow(Q(["Audio: ", str(sect.audio)]))
+        else:
+            step = None
+            num_sections = 0
+            for sect in self.demo:
+                for stepd in sect:
+                    if stepd.demo_idx+num_sections==index:
+                        step = stepd
+                num_sections += 1
+            
+            self.demo_info.appendRow(Q(["Name: ", step.name]))
+            self.demo_info.appendRow(Q(["ID: ", step.id]))
+            self.demo_info.appendRow(Q(["Demo index: ", step.demo_idx]))
+            self.demo_info.appendRow(Q(["Step index: ", step.idx]))
+            self.demo_info.appendRow(Q(["Assets: ", str(step.assets)]))
+            self.demo_info.appendRow(Q(["Audio: ", str(step.audio)]))
+            self.demo_info.appendRow(Q(["Instructions: ", str(step.ci)]))
+            self.demo_info.appendRow(Q(["Talking Point: ", str(step.tp)]))
+
+            for i, (attr, adict) in enumerate(dt.STEP_PROPS.items()):
+                self.demo_info.appendRow(Q([attr.capitalize()+": ", getattr(step, attr)]))
+            
+            for box, bdict in dt.BOX_PROPS.items():
+                for i, prop, in enumerate({**bdict["props"], **dt.DIRS}.keys()):
+                    try:
+                        self.demo_info.appendRow(Q([f"{box.capitalize()} {prop}: ", getattr(step,box)[prop][0]]))
+                    except:
+                        pass
 
     def browse_img(self):
         options = QFileDialog.Options()
