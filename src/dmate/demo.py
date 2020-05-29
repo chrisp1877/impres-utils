@@ -50,7 +50,8 @@ class Demo:
         self.path = Path(path)
         parser = ET.XMLParser(strip_cdata=False, remove_blank_text=True)
         try:
-            self.root = ET.parse(path, parser).getroot()
+            self.tree = ET.parse(path, parser)
+            self.root = self.tree.getroot()
         except:
             print("Demo failed to import. Demo file might be corrupted or in use.")
             return False
@@ -66,12 +67,11 @@ class Demo:
                 self.sections.append(section)
             self.steps =[step for sect in self for step in sect]
             print(f"Imported demo with {len(self)} sections and {len(self.steps)} steps.")
-        if (script_path := self.script_path):
-            self.script = Script(script_path)
-            if self.script.loaded:
-                if self.matches_script(self.script):
-                    print("Script: Matches demo. Script imported successfully.")
-                    self.set_text(self.script)
+        self.script = Script(self.script_path)
+        if self.script.loaded:
+            if self.matches_script(self.script):
+                print("Script: Matches demo. Script imported successfully.")
+                self.set_text(self.script)
         else:
             if (exp_script := self.path.with_suffix('.docx')).exists():
                 self.script = Script(str(exp_script))
@@ -79,11 +79,10 @@ class Demo:
                     if self.matches_script(self.script):
                         print("Script: Matches demo. Script imported successfully.")
                         self.set_text(self.script)
-        if self.audio_dir:
-            self.audio = Audio(self.audio_dir)
-            if self.audio.loaded:
-                if self.matches_audio(self.audio, by_tp=True):
-                    self.set_audio(self.audio)
+        self.audio = Audio(self.audio_dir)
+        if self.audio.loaded:
+            if self.matches_audio(self.audio, by_tp=True):
+                self.set_audio(self.audio)
 
     def matches_script(self, script: Script = None, naive: bool = True) -> bool:
         # make advanced algorithm to check non strict sect idx and step idx, optional
@@ -419,6 +418,10 @@ class Demo:
 
     def __delitem__(self, key):
         pass
+
+    def xml(self):
+        xml = ET.tostring(self.tree, pretty_print=True, xml_declaration=True, encoding='utf-8')
+        return str(xml)
 
 #-----------------------------ITERATORS--------------------------------
 #TODO: Learn a lot more about generators, implement same functionality

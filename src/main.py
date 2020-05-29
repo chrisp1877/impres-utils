@@ -9,10 +9,16 @@ from copy import deepcopy
 if __name__ == "__main__":
 
     # scriptpath = r"C:\Users\Jess\Documents\My Demos\test2\RSM-SC - Eligibility [R1 - V3].docx"
-    # demopath = r"C:\Users\Jess\Documents\My Demos\test2\RSM-SC - Eligibility [R1 - V3].demo"
+    #demopath = r"C:\Users\Jess\Documents\My Demos\test2\RSM-SC - Eligibility [R1 - V3].demo"
     # audiodir = r"C:\Users\Jess\Documents\My Demos\test1sec\Audio" 
     # demo = Demo(path=demopath, script_path=scriptpath, audio_dir=audiodir, is_sectioned=True)
+    #demo = Demo(demopath)
 
+    # for step in demo.iter_step():
+    #     try:
+    #         print(step.hotspot["x0"])
+    #     except:
+    #         pass
 
 
     app = ImpresysApplication()

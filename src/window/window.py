@@ -47,6 +47,8 @@ class ImpresysWindow(QMainWindow):
         self.SHELL_BG_SEPARATE = bool()
         self.SHELL_LOC = [None, None]
         self.SHELL_SIZE = [None, None]
+        self.SECTS_SELECTED = []
+        self.STEPS_SELECTED = []
 
         self.title = 'Impresys Utilities'
         self.left = 10
@@ -124,13 +126,14 @@ class ImpresysWindow(QMainWindow):
         self.entry_layout.addLayout(self.audio_layout)
         self.entry_layout.addWidget(self.tab_widget)
 
-
         self.addStatusBar()
         self.addMenuBar()
         self.configPreview()
         self.setTabs()
         self.setFirstTab()
         self.setSecondTab()
+        self.setSectionTab()
+        self.setAudioTab()
         self.setXmlTab()
         self.progBar = QProgressBar()
         self.entry_layout.addWidget(self.tab_widget)
@@ -147,6 +150,9 @@ class ImpresysWindow(QMainWindow):
         #toolsMenu = mainMenu.addMenu('Tools')
         aboutMenu = mainMenu.addMenu('About')
         helpMenu = mainMenu.addMenu('Help')
+        impDemo = QAction(QIcon('open.png'), 'Open Demo', self)
+        impDemo.setShortcut('Ctrl+D')
+        impDemo.setStatusTip('Import demo')
         saveConfig = QAction(QIcon('save.png'), 'Save inputs', self)
         saveConfig.setShortcut('Ctrl+S')
         saveConfig.setStatusTip('Save currently inputted variables to a text file')
@@ -215,9 +221,9 @@ class ImpresysWindow(QMainWindow):
 
     def setFirstTab(self):
         self.shellForm = QFormLayout(self.shellTab)
-        self.shellForm.setVerticalSpacing(20)
-        self.shellForm.setHorizontalSpacing(10)
-        self.shellForm.setContentsMargins(25, 25, 25, 25)
+        self.shellForm.setVerticalSpacing(10)
+        self.shellForm.setHorizontalSpacing(5)
+        self.shellForm.setContentsMargins(15, 15, 15, 15)
 
         self.imgPreviewLayout = QGridLayout()
         self.imgPreview = QGraphicsScene()
@@ -310,10 +316,13 @@ class ImpresysWindow(QMainWindow):
         self.sh4.addWidget(self.s_shsizey)
         self.shellForm.addRow(self.sh4)
 
-        self.shellSects = QLineEdit(self.shellTab)
-        #self.shellSects.setPlaceholderText('All')
+        self.sects_sel = QLineEdit(self.shellTab)
         self.shellForm.addRow(QLabel("Sections to apply shelling to (separated by commas, see Help): ", self.shellTab))
-        self.shellForm.addRow(self.shellSects)
+        self.shellForm.addRow(self.sects_sel)
+
+        self.steps_sel = QLineEdit(self.shellTab)
+        self.shellForm.addRow(QLabel("Steps to apply shelling to (by demo index, select in sidebar): ", self.shellTab))
+        self.shellForm.addRow(self.steps_sel)
 
         self.bottom_buttons(['Shell', 'Begin shelling'], self.shellTab, self.shellForm)
 
@@ -328,9 +337,9 @@ class ImpresysWindow(QMainWindow):
         self.insTab = QWidget()
 
         self.insForm = QFormLayout(self.insTab)
-        self.insForm.setVerticalSpacing(20)
-        self.insForm.setHorizontalSpacing(10)
-        self.insForm.setContentsMargins(25, 25, 25, 25)
+        self.insForm.setVerticalSpacing(10)
+        self.insForm.setHorizontalSpacing(5)
+        self.insForm.setContentsMargins(15, 15, 15, 15)
 
         self.insImgPreviewLayout = QGridLayout()
         self.insImgPreview = QGraphicsScene()
@@ -344,16 +353,72 @@ class ImpresysWindow(QMainWindow):
 
         self.image_paste_form(ins_labels, self.insTab, self.insForm)
 
-        self.shellForm.addRow(QLabel())
+        self.insForm.addRow(QLabel())
 
         self.tab_widget.addTab(self.insTab, "")
         self.tab_widget.setTabText(self.tab_widget.indexOf(self.insTab), "Insert")
-        self.insSects = QLineEdit(self.insTab)
-        #self.insSects.setPlaceholderText('All')
-        self.to_ins = self.insSects.text().split(",") #@FIELD
-        self.insForm.addRow(QLabel("Sections to apply shelling to (separated by commas, see Help): ", self.insTab))
-        self.insForm.addRow(self.insSects)
+
+        self.sects_sel = QLineEdit(self.insTab)
+        self.insForm.addRow(QLabel("Sections to insert image into (separated by commas, see Help): ", self.insTab))
+        self.insForm.addRow(self.sects_sel)
+
+        self.steps_sel = QLineEdit(self.insTab)
+        self.insForm.addRow(QLabel("Steps to apply insertion to (by demo index, select in sidebar): ", self.insTab))
+        self.insForm.addRow(self.steps_sel)
+
         self.bottom_buttons(['Insert', 'Begin insertion'], self.insTab, self.insForm)
+
+    def setSectionTab(self):
+        #@TODO Add real functionality here involving mass XML edits by tag, not just as an XML editor
+        self.sectionTab = QWidget()
+        self.sectionForm = QFormLayout(self.sectionTab)
+        self.sectionForm.setVerticalSpacing(10)
+        self.sectionForm.setHorizontalSpacing(5)
+        self.sectionForm.setContentsMargins(15, 15, 15, 15)
+
+        self.sectionForm.addRow("We can tell your demo is/is not sectioned...", self.sectionTab)
+
+        bot = QHBoxLayout()
+        bot.setAlignment(Qt.AlignBottom)
+        reset_btn = QPushButton('Reset', self.sectionTab)
+        reset_btn.setStatusTip('Reset demo to default')
+        reset_btn.clicked.connect(self.close) #@TODO Make actually reset
+        save_btn = QPushButton("Section", self.sectionTab)
+        save_btn.setStatusTip('Begin sectioning')
+        save_btn.clicked.connect(self.begin_sectioning) #@TODO Actually save XML
+        bot.addWidget(reset_btn)
+        bot.addStretch()
+        bot.addWidget(save_btn)
+        self.sectionForm.addRow(bot)
+
+        self.tab_widget.addTab(self.sectionTab, "")
+        self.tab_widget.setTabText(self.tab_widget.indexOf(self.sectionTab), "Sectioning")
+
+    def setAudioTab(self):
+        #@TODO Add real functionality here involving mass XML edits by tag, not just as an XML editor
+        self.audioTab = QWidget()
+        self.audioForm = QFormLayout(self.xmlTab)
+        self.audioForm.setVerticalSpacing(10)
+        self.audioForm.setHorizontalSpacing(5)
+        self.audioForm.setContentsMargins(15, 15, 15, 15)
+
+        self.audioForm.addRow("We can tell your demo has/does not have audio...", self.audioTab)
+
+        bot = QHBoxLayout()
+        bot.setAlignment(Qt.AlignBottom)
+        reset_btn = QPushButton('Reset', self.audioTab)
+        reset_btn.setStatusTip('Reset demo to default')
+        reset_btn.clicked.connect(self.close) #@TODO Make actually reset
+        save_btn = QPushButton("Add Audio", self.audioTab)
+        save_btn.setStatusTip('Begin adding audio')
+        save_btn.clicked.connect(self.add_audio) #@TODO Actually save XML
+        bot.addWidget(reset_btn)
+        bot.addStretch()
+        bot.addWidget(save_btn)
+        self.audioForm.addRow(bot)
+
+        self.tab_widget.addTab(self.audioTab, "")
+        self.tab_widget.setTabText(self.tab_widget.indexOf(self.audioTab), "Audio")
 
     def setXmlTab(self):
         #@TODO Add real functionality here involving mass XML edits by tag, not just as an XML editor
@@ -505,6 +570,12 @@ class ImpresysWindow(QMainWindow):
 
     # ------ FUNCTIONS --------------------#
 
+    def begin_sectioning(self):
+        pass
+
+    def add_audio(self):
+        pass
+
     def browse_demo(self, tnum):
         options = QFileDialog.Options()
         options |= QFileDialog.DontUseNativeDialog
@@ -515,7 +586,7 @@ class ImpresysWindow(QMainWindow):
 
     def browse_script(self, tnum):
         options = QFileDialog.Options()
-        options |= QFileDialog
+        options |= QFileDialog.DontUseNativeDialog
         fileName, _ = QFileDialog.getOpenFileName(self,"Browse for .docx files", "","Word files (*.docx);;All Files (*)", options=options)
         self.script_tbox.setText(fileName)
         self.SCRIPT_PATH = fileName
@@ -523,18 +594,20 @@ class ImpresysWindow(QMainWindow):
 
     def browse_audio(self, tnum):
         options = QFileDialog.Options()
-        options |= QFileDialog
+        options |= QFileDialog.DontUseNativeDialog
         folderName, _ = QFileDialog.getExistingDirectory(self,"Browse for audio folder", "","All Files (*)", options=options)
         self.audio_tbox.setText(folderName)
         self.AUDIO_PATH = folderName
         self.load_demo()
 
+    
+
     def load_demo(self):
+        def Q(ls: list): return [QStandardItem(q) for q in ls]
         self.demo = Demo(path=self.DEMO_PATH, script_path=self.SCRIPT_PATH, audio_dir=self.AUDIO_PATH)
+        self.xmlEditor.setText(self.demo.xml())
         self.demo_title = QLabel(self.demo.title)
         self.demo_model = QStandardItemModel(self.demo_tree)
-        self.demo_info = QStandardItemModel(self.demo_info)
-        self.demo_info.setColumnCount(2)
         self.demo_model.setHorizontalHeaderLabels([self.demo.title, "Has TP", "Animated"])
         for i, sect in enumerate(self.demo):
             section = QStandardItem(sect.title)
@@ -549,6 +622,7 @@ class ImpresysWindow(QMainWindow):
                 qstep.setCheckable(True)
                 qstep.setSelectable(True)
                 qstep.setDragEnabled(True)
+                qstep.setUserTristate(False)
                 qstep.setDropEnabled(True)
                 qtp = QStandardItem(str(step.tp.text is not ""))
                 qan = QStandardItem(str(step.animated))
@@ -557,50 +631,102 @@ class ImpresysWindow(QMainWindow):
             self.demo_model.appendRow(section)
         self.demo_model.itemChanged.connect(self.displayInfo)
         self.demo_tree.setModel(self.demo_model)
+        #self.demo_tree.selectionChanged.connect(self.displayInfo)
+
+    def displayDemoInfo(self):
+        #implement for TreeView selectionChanged, add this logic to modelitemlist itemChanged
+        def Q(ls: list): return [QStandardItem(q) for q in ls]
+        demo_info = QStandardItemModel(self.demo_info)
+        demo_info.setColumnCount(2)
+        demo_info.setHorizontalHeaderLabels(["Property", "Value"])
+        demo_info.appendRow(Q(["Title", self.demo.title]))
+        demo_info.appendRow(Q(["ID", self.demo.id]))
+        demo_info.appendRow(Q(["Demo path", str(self.demo.path)]))
+        demo_info.appendRow(Q(["Script loaded", self.demo.script.loaded]))
+        demo_info.appendRow(Q(["Audio loaded", self.demo.audio.loaded]))
+        demo_info.appendRow(Q(["Number steps", len(self.demo.steps)]))
+        demo_info.appendRow(Q(["Number sections", len(self.demo.sections)]))
+        self.demo_info.setModel(demo_info)
             
     def displayInfo(self, item):
-        index = self.demo_model.indexFromItem(item).row()
-        Q = lambda Q: [QStandardItem(q) for q in Q]
-        if item.hasChildren():
-            sect = None
-            idx = 0
-            for section in self.demo:
-                if section.demo_idx == int(index) or section.idx == index:
-                    sect = section
-                idx += len(section) + 1
-            self.demo_info.appendRow([QStandardItem("Title: "), QStandardItem(sect.title)])
-            self.demo_info.appendRow([QStandardItem("ID: "), QStandardItem(sect.id)])
-            self.demo_info.appendRow(Q(["Demo index: ", sect.demo_idx]))
-            self.demo_info.appendRow(Q(["Section index: ", sect.sect_idx]))
-            self.demo_info.appendRow(Q(["Assets: ", str(sect.assets)]))
-            self.demo_info.appendRow(Q(["Audio: ", str(sect.audio)]))
-        else:
-            step = None
-            num_sections = 0
-            for sect in self.demo:
-                for stepd in sect:
-                    if stepd.demo_idx+num_sections==index:
-                        step = stepd
-                num_sections += 1
-            
-            self.demo_info.appendRow(Q(["Name: ", step.name]))
-            self.demo_info.appendRow(Q(["ID: ", step.id]))
-            self.demo_info.appendRow(Q(["Demo index: ", step.demo_idx]))
-            self.demo_info.appendRow(Q(["Step index: ", step.idx]))
-            self.demo_info.appendRow(Q(["Assets: ", str(step.assets)]))
-            self.demo_info.appendRow(Q(["Audio: ", str(step.audio)]))
-            self.demo_info.appendRow(Q(["Instructions: ", str(step.ci)]))
-            self.demo_info.appendRow(Q(["Talking Point: ", str(step.tp)]))
+        def Q(ls: list): return [QStandardItem(q) for q in ls]
+        if item.checkState():
+            index = self.demo_model.indexFromItem(item).row()
+            item_info = QStandardItemModel(self.demo_info)
+            if item.hasChildren():
+                self.getChecked(item,"sect",index)
+                sect = self.demo.sections[index]
+                item_info.appendRow([QStandardItem("Title: "), QStandardItem(sect.title)])
+                item_info.appendRow([QStandardItem("ID: "), QStandardItem(sect.id)])
+                item_info.appendRow(Q(["Demo index: ", sect.demo_idx]))
+                item_info.appendRow(Q(["Section index: ", sect.idx]))
+                item_info.appendRow(Q(["Assets: ", str(sect.assets)]))
+                item_info.appendRow(Q(["Audio: ", str(sect.audio)]))
+            else:
+                self.getChecked(item,"step",index)
+                sect_idx = self.demo_model.indexFromItem(item.parent()).row()
+                step = self.demo.sections[sect_idx].steps[index]
+                item_info.appendRow(Q(["Name: ", step.name]))
+                item_info.appendRow(Q(["ID: ", step.id]))
+                item_info.appendRow(Q(["Demo index: ", step.demo_idx]))
+                item_info.appendRow(Q(["Step index: ", step.idx]))
+                item_info.appendRow(Q(["Assets: ", str(step.assets)]))
+                item_info.appendRow(Q(["Audio: ", str(step.audio)]))
+                item_info.appendRow(Q(["Instructions: ", str(step.ci)]))
+                item_info.appendRow(Q(["Talking Point: ", str(step.tp)]))
 
-            for i, (attr, adict) in enumerate(dt.STEP_PROPS.items()):
-                self.demo_info.appendRow(Q([attr.capitalize()+": ", getattr(step, attr)]))
-            
-            for box, bdict in dt.BOX_PROPS.items():
-                for i, prop, in enumerate({**bdict["props"], **dt.DIRS}.keys()):
-                    try:
-                        self.demo_info.appendRow(Q([f"{box.capitalize()} {prop}: ", getattr(step,box)[prop][0]]))
-                    except:
-                        pass
+                for i, (attr, adict) in enumerate(dt.STEP_PROPS.items()):
+                    item_info.appendRow(Q([attr.capitalize()+": ", getattr(step, attr)]))
+                
+                for box, bdict in dt.BOX_PROPS.items():
+                    for i, (prop, bdictall) in enumerate({**bdict["props"], **dt.DIRS}.items()):
+                        try:
+                            item_info.appendRow(Q([f"{bdict[box]['tag'][:-1].capitalize()} {bdictall[prop]['tag']}: ", str(getattr(step,box)[prop])]))
+                        except:
+                            pass
+            self.demo_info.setModel(item_info)
+            self.demo_info.setColumnWidth(0, 250)
+            self.demo_info.setColumnWidth(1, 100)
+            self.demo_info.setColumnWidth(1, 100)
+        else:
+            self.displayDemoInfo()
+
+    def getChecked(self,item,typ,index):
+        model = item.model()
+        count = 0
+        if typ == "sect" and not item.checkState():
+            sect = model.item(index)
+            for stepi in range(sect.rowCount()):
+                step = sect.child(stepi, 0)
+                if step.checkState():
+                    step.setCheckState(False)
+        for rowi in range(model.rowCount()):
+            sect = model.item(rowi)
+            title = self.demo.sections[rowi].title
+
+            if sect.checkState():
+                if title not in self.SECTS_SELECTED:
+                    self.SECTS_SELECTED.append(title)
+            else:
+                if title in self.SECTS_SELECTED:
+                    self.SECTS_SELECTED.remove(title)
+            for stepi in range(sect.rowCount()):
+                step = sect.child(stepi, 0)
+                if step.checkState():
+                    if count not in self.STEPS_SELECTED or sect.checkState():
+                        step.setCheckState(True)
+                        self.STEPS_SELECTED.append(count)
+                else:
+                    if sect.checkState():
+                        step.setCheckState(True)
+                    if count in self.STEPS_SELECTED:
+                        self.STEPS_SELECTED.remove(count)
+                count += 1
+        self.sects_sel.setText(str(self.SECTS_SELECTED))
+        self.steps_sel.setText(str(self.STEPS_SELECTED))
+
+    def getSelectedInfo(self, item):
+        raise NotImplementedError()
 
     def browse_img(self):
         options = QFileDialog.Options()
