@@ -7,11 +7,12 @@ from PyQt5.QtWidgets import (
     QVBoxLayout, QFileDialog, QAction, QMessageBox, QFrame, QStatusBar,
     QTabWidget, QSpacerItem, QSizePolicy, QRadioButton, QProgressBar,
     QButtonGroup, QDoubleSpinBox, QGraphicsScene, QProgressDialog, QListView,
-    QListWidget, QListWidgetItem, QTableView, QHeaderView, QTreeView
+    QListWidget, QListWidgetItem, QTableView, QHeaderView, QTreeView,
+    QAbstractItemView
     
 )
-from PyQt5.QtGui import QIcon, QStandardItemModel, QStandardItem
-from PyQt5.QtCore import pyqtSlot, Qt, QFileSelector
+from PyQt5.QtGui import (QIcon, QStandardItemModel, QStandardItem, )
+from PyQt5.QtCore import pyqtSlot, pyqtSignal, Qt, QFileSelector, QItemSelectionModel
 import lxml.etree as ET
 from PIL import Image
 from typing import List, Tuple
@@ -47,8 +48,8 @@ class ImpresysWindow(QMainWindow):
         self.SHELL_BG_SEPARATE = bool()
         self.SHELL_LOC = [None, None]
         self.SHELL_SIZE = [None, None]
-        self.SECTS_SELECTED = []
-        self.STEPS_SELECTED = []
+        self.SECTS_SELECTED = set()
+        self.STEPS_SELECTED = set()
 
         self.title = 'Impresys Utilities'
         self.left = 10
@@ -143,59 +144,80 @@ class ImpresysWindow(QMainWindow):
         QtCore.QMetaObject.connectSlotsByName(self)
 
     def addMenuBar(self):
+
+        def additem(menu, icon, name, shortcut, tip, func=None):
+            item = QAction(QIcon(icon), name, self)
+            item.setShortcut(shortcut)
+            item.setStatusTip(tip)
+            if func is not None:
+                item.triggered.connect(func)
+            menu.addAction(item)
+        
         mainMenu = self.menuBar()
-        fileMenu = mainMenu.addMenu('File')
-        editMenu = mainMenu.addMenu('Edit')
-        viewMenu = mainMenu.addMenu('View')
-        #toolsMenu = mainMenu.addMenu('Tools')
-        aboutMenu = mainMenu.addMenu('About')
-        helpMenu = mainMenu.addMenu('Help')
-        impDemo = QAction(QIcon('open.png'), 'Open Demo', self)
+        filem = mainMenu.addMenu('File')
+        editm = mainMenu.addMenu('Edit')
+        viewm = mainMenu.addMenu('View')
+        toolsm = mainMenu.addMenu('Tools')
+        aboutm = mainMenu.addMenu('About')
+        helpm = mainMenu.addMenu('Help')
+
+        additem(filem, 'open1.png', 'Import Demo', 'Ctrl+Shift+D', 'Import demo', self.browse_demo)
+        additem(filem, 'open2.png', 'Import Script', 'Ctrl+Shift+S', 'Import script', self.browse_script)
+        additem(filem, 'open3.png', 'Import Audio', 'Ctrl+Shift+A', 'Import audio', self.browse_audio)
+        additem(filem, 'save.png', 'Save config', 'Ctrl+S', 'Save currently inputted variables to a text file', self.saveConfig)
+        additem(filem, 'load.png', 'Load config', 'Ctrl+O', 'Load variables previously saved to a text file', self.loadConfig)
+        additem(filem, 'exit24.png', 'Exit', 'Ctrl+Q', 'Exit application', self.close)
+        """
+        impDemo = QAction(QIcon('open.png'), 'Import Demo', self)
         impDemo.setShortcut('Ctrl+D')
         impDemo.setStatusTip('Import demo')
+        impDemo.triggered.connect(self.browse_demo)
+        impDemo = QAction(QIcon('open.png'), 'Import Demo', self)
+        impDemo.setShortcut('Ctrl+D')
+        impDemo.setStatusTip('Import demo')
+        impDemo.triggered.connect(self.browse_demo)
         saveConfig = QAction(QIcon('save.png'), 'Save inputs', self)
         saveConfig.setShortcut('Ctrl+S')
         saveConfig.setStatusTip('Save currently inputted variables to a text file')
         #saveButton.triggered.connect(self.saveConfig)
         fileMenu.addAction(saveConfig)
-
-        preferences = QAction(QIcon('prefs.png'), 'Preferences', self)
-        preferences.setShortcut('Ctrl+P')
-        preferences.setStatusTip('Change preferences for different utilities')
-        #preferences.triggered.connect(self.preferences)
-        editMenu.addAction(preferences)
-
         exitButton = QAction(QIcon('exit24.png'), 'Exit', self)
         exitButton.setShortcut('Ctrl+Q')
         exitButton.setStatusTip('Exit application')
         exitButton.triggered.connect(self.close)
-        fileMenu.addAction(exitButton)
+        film.addAction(exitButton)
+        """
+        preferences = QAction(QIcon('prefs.png'), 'Preferences', self)
+        preferences.setShortcut('Ctrl+P')
+        preferences.setStatusTip('Change preferences for different utilities')
+        #preferences.triggered.connect(self.preferences)
+        editm.addAction(preferences)
 
         viewStatAct = QAction('View statusbar', self, checkable=True)
         viewStatAct.setShortcut('Ctrl+Shift+V')
         viewStatAct.setStatusTip('View statusbar')
         viewStatAct.setChecked(True)
         viewStatAct.triggered.connect(self.toggleMenu)
-        viewMenu.addAction(viewStatAct)
+        viewm.addAction(viewStatAct)
 
         viewPrev = QAction('View preview', self, checkable=True)
         viewPrev.setShortcut('Ctrl+Shift+P')
         viewPrev.setStatusTip('View preview of shelling / insertion points')
         viewPrev.setChecked(True)
         viewPrev.triggered.connect(self.preview_img)
-        viewMenu.addAction(viewPrev)
+        viewm.addAction(viewPrev)
 
         aboutButton = QAction(QIcon("about1.png"), "About", self)
         aboutButton.setShortcut('Ctrl+A')
         aboutButton.setStatusTip('About application')
         aboutButton.triggered.connect(self.open_about)
-        aboutMenu.addAction(aboutButton)
+        aboutm.addAction(aboutButton)
 
         helpButton = QAction(QIcon("help.png"), "Help", self)
         helpButton.setShortcut('Ctrl+H')
         helpButton.setStatusTip('Help for shelling and inserting')
         helpButton.triggered.connect(self.open_help)
-        helpMenu.addAction(helpButton)
+        helpm.addAction(helpButton)
 
     def configPreview(self):
         self.shellLayout = QVBoxLayout()
@@ -576,6 +598,12 @@ class ImpresysWindow(QMainWindow):
     def add_audio(self):
         pass
 
+    def saveConfig(self):
+        pass
+
+    def loadConfig(self):
+        pass
+
     def browse_demo(self, tnum):
         options = QFileDialog.Options()
         options |= QFileDialog.DontUseNativeDialog
@@ -601,7 +629,11 @@ class ImpresysWindow(QMainWindow):
         self.load_demo()
 
     
-
+    #TODO Add "Select all" to QTreeView through top left behavior
+    #TODO Maybe subclass QTreeView for demo tree to allow for easier handling
+    #     of checkbox emitting signals upon selection and de-selection?
+    #TODO I'm sure there's already selected checkboxes being stored in a list
+    #     somewhere, find a way to access it rather than making for loops everywhere
     def load_demo(self):
         def Q(ls: list): return [QStandardItem(q) for q in ls]
         self.demo = Demo(path=self.DEMO_PATH, script_path=self.SCRIPT_PATH, audio_dir=self.AUDIO_PATH)
@@ -617,21 +649,23 @@ class ImpresysWindow(QMainWindow):
             section.setSelectable(True)
             section.setEditable(True)
             section.setDropEnabled(True)
+            section.setFlags(section.flags() | Qt.ItemIsTristate \
+                            | Qt.ItemIsUserCheckable | Qt.ItemIsSelectable)
             for j, step in enumerate(sect):
                 qstep = QStandardItem(step.name)
                 qstep.setCheckable(True)
                 qstep.setSelectable(True)
                 qstep.setDragEnabled(True)
-                qstep.setUserTristate(False)
                 qstep.setDropEnabled(True)
                 qtp = QStandardItem(str(step.tp.text is not ""))
                 qan = QStandardItem(str(step.animated))
+                qt = QStandardItem()
                 section.appendRow([qstep, qtp, qan])
                 section.setChild(j, qstep)
             self.demo_model.appendRow(section)
         self.demo_model.itemChanged.connect(self.displayInfo)
         self.demo_tree.setModel(self.demo_model)
-        #self.demo_tree.selectionChanged.connect(self.displayInfo)
+        #TODO set demo tree selection model?
 
     def displayDemoInfo(self):
         #implement for TreeView selectionChanged, add this logic to modelitemlist itemChanged
@@ -654,7 +688,7 @@ class ImpresysWindow(QMainWindow):
             index = self.demo_model.indexFromItem(item).row()
             item_info = QStandardItemModel(self.demo_info)
             if item.hasChildren():
-                self.getChecked(item,"sect",index)
+                self.getChecked(item,True,index)
                 sect = self.demo.sections[index]
                 item_info.appendRow([QStandardItem("Title: "), QStandardItem(sect.title)])
                 item_info.appendRow([QStandardItem("ID: "), QStandardItem(sect.id)])
@@ -663,7 +697,7 @@ class ImpresysWindow(QMainWindow):
                 item_info.appendRow(Q(["Assets: ", str(sect.assets)]))
                 item_info.appendRow(Q(["Audio: ", str(sect.audio)]))
             else:
-                self.getChecked(item,"step",index)
+                self.getChecked(item,False,index)
                 sect_idx = self.demo_model.indexFromItem(item.parent()).row()
                 step = self.demo.sections[sect_idx].steps[index]
                 item_info.appendRow(Q(["Name: ", step.name]))
@@ -674,14 +708,16 @@ class ImpresysWindow(QMainWindow):
                 item_info.appendRow(Q(["Audio: ", str(step.audio)]))
                 item_info.appendRow(Q(["Instructions: ", str(step.ci)]))
                 item_info.appendRow(Q(["Talking Point: ", str(step.tp)]))
-
                 for i, (attr, adict) in enumerate(dt.STEP_PROPS.items()):
                     item_info.appendRow(Q([attr.capitalize()+": ", getattr(step, attr)]))
-                
                 for box, bdict in dt.BOX_PROPS.items():
-                    for i, (prop, bdictall) in enumerate({**bdict["props"], **dt.DIRS}.items()):
+                    for i, (prop, bdictall) in enumerate(\
+                        {**bdict["props"], **dt.DIRS}.items()):
                         try:
-                            item_info.appendRow(Q([f"{bdict[box]['tag'][:-1].capitalize()} {bdictall[prop]['tag']}: ", str(getattr(step,box)[prop])]))
+                            tag = bdict[box]['tag'][:-1].capitalize()
+                            proptag = bdictall[prop]['tag']
+                            val = getattr(step,box)[prop]
+                            item_info.appendRow(Q([f"{tag} {proptag}", str(val)]))
                         except:
                             pass
             self.demo_info.setModel(item_info)
@@ -691,39 +727,48 @@ class ImpresysWindow(QMainWindow):
         else:
             self.displayDemoInfo()
 
-    def getChecked(self,item,typ,index):
+    def getChecked(self,item,item_is_sect,index):
         model = item.model()
+        print(f"signal emitted! getChecked called! Is sect? {str(item_is_sect)} index: {index}")
+        sel = self.demo_tree.selectedIndexes()
+        print(sel)
         count = 0
-        if typ == "sect" and not item.checkState():
-            sect = model.item(index)
-            for stepi in range(sect.rowCount()):
-                step = sect.child(stepi, 0)
-                if step.checkState():
-                    step.setCheckState(False)
+        sel_sects, sel_steps = self.SECTS_SELECTED, self.STEPS_SELECTED
+        #TODO I'm sure this logic is already all implemented in Qt already... find it
+        #at least minimize redundant logic present here
         for rowi in range(model.rowCount()):
             sect = model.item(rowi)
             title = self.demo.sections[rowi].title
-
-            if sect.checkState():
-                if title not in self.SECTS_SELECTED:
-                    self.SECTS_SELECTED.append(title)
+            sect_checked = sect.checkState()
+            if sect_checked:
+                sel_sects.add(title)
+                #self.demo_tree.setExpanded(rowi, True)
             else:
-                if title in self.SECTS_SELECTED:
-                    self.SECTS_SELECTED.remove(title)
+                sel_sects.discard(title)
             for stepi in range(sect.rowCount()):
                 step = sect.child(stepi, 0)
-                if step.checkState():
-                    if count not in self.STEPS_SELECTED or sect.checkState():
-                        step.setCheckState(True)
-                        self.STEPS_SELECTED.append(count)
+                step_checked = step.checkState()
+                if sect_checked and item_is_sect:
+                    step.setCheckState(True)
+                    sel_steps.add(count)
                 else:
-                    if sect.checkState():
-                        step.setCheckState(True)
-                    if count in self.STEPS_SELECTED:
-                        self.STEPS_SELECTED.remove(count)
+                    if step_checked and item_is_sect:
+                        step.setCheckState(False)
+                        sel_steps.discard(count)
+                    elif step_checked and not item_is_sect:
+                        sel_steps.add(count)
+                    else:
+                        sel_steps.discard(count)
                 count += 1
-        self.sects_sel.setText(str(self.SECTS_SELECTED))
-        self.steps_sel.setText(str(self.STEPS_SELECTED))
+        if len(sel_sects):
+            self.sects_sel.setText(str(sorted(sel_sects))[1:-1])
+        else:
+            self.sects_sel.setText("")
+        if len(sel_steps):
+            self.steps_sel.setText(str(sorted(sel_steps))[1:-1])
+        else:
+            self.steps_sel.setText("")
+        self.SECTS_SELECTED, self.STEPS_SELECTED = sel_sects, sel_steps
 
     def getSelectedInfo(self, item):
         raise NotImplementedError()
