@@ -10,7 +10,8 @@ from dmate.step import Step
 from dmate.script import Script, TextBox
 from dmate.audio import Audio
 from etc.utils import validate_path, timefunc, logger
-from collections import deque
+from collections import deque, namedtuple
+from PIL import Image
 import shutil
 
 #----------------------------DEMO------------------------------------#
@@ -28,8 +29,8 @@ class Demo:
         self.audio_dir = audio_dir
         self.is_sectioned = is_sectioned
         self.audio_attached = audio_attached
-        self.title = "" #TODO    
-        self.resolution = (1920, 1080) #TODO
+        self.title = "" 
+        self.res = (1920, 1080) #TODO make changeable?
         self.len, self.sect_len = 0, 0
         self.sections: List[Section] = []
         self.steps: List[Step] = []
@@ -39,8 +40,7 @@ class Demo:
             logger.error("Demo failed to import. %s", str(exc))
             self.loaded = False
 
-    #@validate_path #~329ms
-    @timefunc
+    @validate_path #~329ms
     def load(self, path: str = ""): #w/o dq: 584ms, dq:
         """
         Takes a directory path pointing to a DemoMate script .doc file as input
@@ -174,8 +174,6 @@ class Demo:
                     words[word] = 1
         return words
 
-    
-
     def check_sectioning(self, ignoe):
         for i, sect in self.iter_sect():
             for j, step in sect:
@@ -281,8 +279,6 @@ class Demo:
     def handle_scroll_steps(self, idx: int):
         pass
 
-    
-
     # roadblock: ID? 
     def duplicate_step(self, idx: int, as_pacing: bool = False, before: bool = True):
         #new_guid = step.gen_guid()
@@ -347,11 +343,57 @@ class Demo:
     def update(self):
         pass
 
-    def shell_assets(self):
-        pass
+    def shell_assets(self, 
+                    to_sect: List[str], 
+                    bg_img_path: str, 
+                    asset_new_coord: Tuple[int, int],
+                    asset_new_size: Tuple[int, int],
+                    shell_img_path: str = None,
+                    shell_img_coord: Tuple[int, int] = None,
+                    shell_img_size: Tuple[int, int] = None
+                    ):
+        #TODO Check for exceptions in GUI? Including bounds < 0
+        #TODO Back up asset image in backup folder before overwriting?
+        bound = lambda size, loc: tuple(map(sum, zip(size, loc)))
+        exceeds_res = lambda bound: bound[0]>self.res[0] or bound[1]>self.res[1]
+        sections = [s.lower() for s in to_sect]
+        if exceeds_res(bound(asset_new_size, asset_new_coord)):
+            raise Exception("Resized and relocated image beyond original boundaries")
+        bg_img = Image.open(bg_img_path)
+        if shell_img_path is not None:
+            if exceeds_res(bound(shell_img_size, shell_img_coord)):
+                raise Exception("Shell image dimensions beyond original boundaries")
+            shell_img = Image.open(shell_img_path)
+            shell_img_resize = shell_img.resize(shell_img_size, Image.ANTIALIAS)
+            bg_img.paste(shell_img_resize, shell_img_coord, shell_img_resize.convert('RGBA'))
+    
+        rx, ry = tuple(map(lambda z: z[0]/z[1], zip(asset_new_size, self.res)))
+        self.insert_img(to_sect, bg_img, "", asset_new_size, asset_new_coord)
+        for step in self.iter_steps_in_sects(sections):
+            step.transform_coords(scale=(rx, ry), offset=(asset_new_coord))
+            for img in step.assets.glob("*.png"):
+                curr_img = bg_img.copy()
+                asset = Image.open(img)
+                asset_resize = asset.resize(asset_new_size, Image.ANTIALIAS)
+                curr_img.paste(asset_resize, asset_new_coord, asset_resize.convert('RGBA'))
 
-    def insert_img(self):
-        pass
+    def insert_img(self, 
+                    to_sect: List[str],
+                    fg_img_obj: Image,
+                    fg_img_path: str,
+                    fg_img_size: Tuple[int, int],
+                    fg_img_coord: Tuple[int, int]
+                    ):
+        #TODO Find elegant way to implement boudnary checking for insertion only
+        #     consider putting insert_img in shell_assets before transforming dims?
+        sections = [s.lower() for s in to_sect]
+        fg_img = Image.open(fg_img_path)
+        for step in self.iter_steps_in_sects(sections):
+            for img in step.assets.glob("*.png"):
+                curr_img = fg_img.copy()
+                asset = Image.open(img)
+                asset_resize = asset.resize(fg_img_size, Image.ANTIALIAS)
+                curr_img.paste(asset_resize, fg_img_coord, asset_resize.convert('RGBA'))
 
     def clear_talking_points(self, i: int):
         pass
@@ -392,6 +434,13 @@ class Demo:
                     else:
                         for step in sect.steps:
                             yield step, True
+
+    def iter_steps_in_sects(self, sections: List[str]):
+        for sect in self:
+            if sect != [] and sect not in sections:
+                continue
+            for step in sect:
+                yield step
                 
     def __iter__(self):
         return DemoSectionIterator(self)

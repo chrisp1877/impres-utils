@@ -93,6 +93,10 @@ BOX_PROPS = {
                 "tag": "FontName",
                 "type": str
             },
+            "size": {
+                "tag": "FontSize",
+                "type": int,
+            },
             "color": {
                 "tag": "Color",
                 "type": str,
@@ -118,12 +122,13 @@ BOX_PROPS = {
             
     },
 }
+DIR_KEYS = ["x0", "y0", "x1", "y1"]
 
 DIRS = {
-    "y0": {"tag": "Top", "type": int}, 
-    "y1": {"tag": "Bottom", "type": int}, 
     "x0": {"tag": "Left", "type": int}, 
-    "x1": {"tag": "Right", "type": int}
+    "y0": {"tag": "Top", "type": int}, 
+    "x1": {"tag": "Right", "type": int},
+    "y1": {"tag": "Bottom", "type": int}, 
 }
 
 MOUSE_X, MOUSE_Y = "MouseCoordinates/X", "MouseCoordinates/Y"

@@ -2,6 +2,7 @@ from functools import wraps
 from pathlib import Path
 import timeit
 import logging
+from PIL import Image
 
 # Note: Only use Paths for when things are being opened.
 # Store path attributes as their original string
