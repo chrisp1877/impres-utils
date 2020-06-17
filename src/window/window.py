@@ -315,13 +315,13 @@ class ImpresysWindow(QMainWindow):
         self.sh4.addWidget(self.s_shsizey)
         self.shellForm.addRow(self.sh4)
 
-        self.sects_sel = QLineEdit(self.shellTab)
+        self.sh_sects_sel = QLineEdit(self.shellTab)
         self.shellForm.addRow(QLabel("Sections to apply shelling to (separated by commas, see Help): ", self.shellTab))
-        self.shellForm.addRow(self.sects_sel)
+        self.shellForm.addRow(self.sh_sects_sel)
 
-        self.steps_sel = QLineEdit(self.shellTab)
+        self.sh_steps_sel = QLineEdit(self.shellTab)
         self.shellForm.addRow(QLabel("Steps to apply shelling to (by demo index, select in sidebar): ", self.shellTab))
-        self.shellForm.addRow(self.steps_sel)
+        self.shellForm.addRow(self.sh_steps_sel)
 
         self.bottom_buttons(['Shell', 'Begin shelling'], self.shellTab, self.shellForm)
 
@@ -357,13 +357,13 @@ class ImpresysWindow(QMainWindow):
         self.tab_widget.addTab(self.insTab, "")
         self.tab_widget.setTabText(self.tab_widget.indexOf(self.insTab), "Insert")
 
-        self.sects_sel = QLineEdit(self.insTab)
+        self.ins_sects_sel = QLineEdit(self.insTab)
         self.insForm.addRow(QLabel("Sections to insert image into (separated by commas, see Help): ", self.insTab))
-        self.insForm.addRow(self.sects_sel)
+        self.insForm.addRow(self.ins_sects_sel)
 
-        self.steps_sel = QLineEdit(self.insTab)
+        self.ins_steps_sel = QLineEdit(self.insTab)
         self.insForm.addRow(QLabel("Steps to apply insertion to (by demo index, select in sidebar): ", self.insTab))
-        self.insForm.addRow(self.steps_sel)
+        self.insForm.addRow(self.ins_steps_sel)
 
         self.bottom_buttons(['Insert', 'Begin insertion'], self.insTab, self.insForm)
 
@@ -587,23 +587,28 @@ class ImpresysWindow(QMainWindow):
         fileName, _ = QFileDialog.getOpenFileName(self,"Browse for .demo files", "","Demo files (*.demo);;All Files (*)", options=options)
         self.demo_tbox.setText(fileName)
         self.DEMO_PATH = fileName
-        self.load_demo()
+        if fileName != "":
+            self.load_demo()
 
     def browse_script(self, tnum):
+        """
         options = QFileDialog.Options()
         options |= QFileDialog.DontUseNativeDialog
-        fileName, _ = QFileDialog.getOpenFileName(self,"Browse for .docx files", "","Word files (*.docx);;All Files (*)", options=options)
+        """
+        fileName, _ = QFileDialog.getOpenFileName(self,"Browse for .docx files", "","Word files (*.docx);;All Files (*)")
         self.script_tbox.setText(fileName)
         self.SCRIPT_PATH = fileName
-        self.load_demo()
+        if fileName != "" and self.DEMO_PATH != "":
+            self.load_demo()
 
     def browse_audio(self, tnum):
         options = QFileDialog.Options()
         options |= QFileDialog.DontUseNativeDialog
-        folderName, _ = QFileDialog.getExistingDirectory(self,"Browse for audio folder", "","All Files (*)", options=options)
+        folderName, _ = QFileDialog.getExistingDirectory(self,"Browse for audio folder")
         self.audio_tbox.setText(folderName)
         self.AUDIO_PATH = folderName
-        self.load_demo()
+        if folderName != "" and self.DEMO_PATH != "":
+            self.load_demo()
 
     
     #TODO Add "Select all" to QTreeView through top left behavior
@@ -784,7 +789,7 @@ class ImpresysWindow(QMainWindow):
 
     @pyqtSlot()
     def shell_submit(self):
-        demo_dir = self.demo_tbox1.text()
+        demo_dir = self.demo_tbox.text()
         bg_img_dir = self.img_tbox1.text()
         bg_img_loc = None
         bg_img_size = None
@@ -793,7 +798,7 @@ class ImpresysWindow(QMainWindow):
             bg_img_loc = (int(self.shlocx.text()), int(self.shlocy.text()))
             bg_img_size = (int(self.shsizex.text()), int(self.shsizey.text()))
         shell_img_tbox = None; shell_img_loc = None; shell_img_size = None;
-        to_shell = [s.strip() for s in self.shellSects.text().split(",")]
+        to_shell = [s.strip() for s in self.sh_sects_sel.text().split(",")]
         if self.extra_on:
             shell_img_tbox = self.shell_img_tbox.text()
             if ((len(self.s_shlocx.text()) > 0 and len(self.s_shlocy.text()) > 0) and
@@ -821,7 +826,7 @@ class ImpresysWindow(QMainWindow):
         fg_img_dir = self.img_tbox2.text()
         fg_img_loc = None
         fg_img_size = None
-        to_ins = [s.strip() for s in self.insSects.text().split(',')]
+        to_ins = [s.strip() for s in self.ins_sects_sel.text().split(',')]
         if ((len(self.inslocx.text()) > 0 and len(self.inslocy.text()) > 0) and
            (len(self.inssizex.text()) > 0 and len(self.inssizey.text()) > 0)):
             fg_img_loc = (int(self.inslocx.text()), int(self.inslocy.text()))
@@ -986,11 +991,13 @@ class ImpresysWindow(QMainWindow):
                                 new_img.paste(asset_img_resize, (int(fg_img_loc[0]), int(fg_img_loc[1])))
                                 new_img.save(impath, quality=100)
                                 print("SHELLED: Section: "+section+", Step: "+str(i)+", image: "+filename)
+                                print(sect)
                             else:
                                 fg_img_resize = new_img.resize((int(fg_img_size[0]), int(fg_img_size[1])), Image.ANTIALIAS)
                                 asset_img.paste(fg_img_resize, (int(fg_img_loc[0]), int(fg_img_loc[1])), fg_img_resize.convert('RGBA'))
                                 asset_img.save(impath, quality=100)
                                 print("INSERTED: Section: "+section+", Step: "+str(i)+", image: "+"t")
+                                print(sect)
 
         demo.write(demo_path, xml_declaration=True, encoding='utf-8')
 
