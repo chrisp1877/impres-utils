@@ -1,3 +1,5 @@
+#TODO holy hell I need to refactor this code, I had NO IDEA WHAT I WAS DOING when I made this monstrosity
+
 import sys, os
 from PyQt5 import QtCore
 from PyQt5.QtWidgets import (
@@ -69,7 +71,7 @@ class ImpresysWindow(QMainWindow):
 
         self.centralwidget = QWidget(self)
         self.col_layout = QHBoxLayout(self.centralwidget)
-        self.tab_widget = QTabWidget(self.centralwidget)
+        self.tabs = QTabWidget(self.centralwidget)
         self.entry_layout = QVBoxLayout()
         self.demo_pane = QVBoxLayout()
         self.demo_title = "No demo loaded"
@@ -125,22 +127,23 @@ class ImpresysWindow(QMainWindow):
         self.entry_layout.addLayout(self.demo_layout)
         self.entry_layout.addLayout(self.script_layout)
         self.entry_layout.addLayout(self.audio_layout)
-        self.entry_layout.addWidget(self.tab_widget)
+        self.entry_layout.addWidget(self.tabs)
 
         self.addStatusBar()
         self.addMenuBar()
         self.configPreview()
         self.setTabs()
-        self.setFirstTab()
-        self.setSecondTab()
+        self.setShellTab()
+        self.setInsertTab()
+        self.setCropTab()
         self.setSectionTab()
         self.setAudioTab()
         self.setXmlTab()
         self.progBar = QProgressBar()
-        self.entry_layout.addWidget(self.tab_widget)
+        self.entry_layout.addWidget(self.tabs)
         #self.entry_layout.addWidget(self.progBar, 1, 1, 1, 1)
         self.setCentralWidget(self.centralwidget)
-        self.tab_widget.setCurrentIndex(0)
+        self.tabs.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(self)
 
     def addMenuBar(self):
@@ -201,16 +204,13 @@ class ImpresysWindow(QMainWindow):
 
     def setTabs(self):
         
-        self.tab_widget.setObjectName("tabWidget")
+        self.tabs.setObjectName("tabWidget")
         self.shellTab = QWidget()
-        self.shellTab.setObjectName("shellTab")
-        self.shellTab.setStatusTip("Performing shelling on demo assets")
         self.insTab = QWidget()
-        self.insTab.setObjectName("insTab")
-        self.insTab.setStatusTip("Insert an image into demo assets")
+        self.cropTab = QWidget()
+        self.sectionTab = QWidget()
+        self.audioTab = QWidget()
         self.xmlTab = QWidget()
-        self.xmlTab.setObjectName("xmlTab")
-        self.xmlTab.setStatusTip("Perform bulk XML edits on demo")
 
     def addStatusBar(self):
         self.statusbar = QStatusBar(self)
@@ -218,14 +218,14 @@ class ImpresysWindow(QMainWindow):
         self.statusbar.showMessage("Ready for shelling/insertion")
         self.setStatusBar(self.statusbar)
 
-    def setFirstTab(self):
+    def setShellTab(self):
+        self.shellTab = QWidget()
+        self.shellTab.setObjectName("shellTab")
+        self.shellTab.setStatusTip("Performing shelling on demo assets")
         self.shellForm = QFormLayout(self.shellTab)
         self.shellForm.setVerticalSpacing(10)
         self.shellForm.setHorizontalSpacing(5)
         self.shellForm.setContentsMargins(15, 15, 15, 15)
-
-        self.imgPreviewLayout = QGridLayout()
-        self.imgPreview = QGraphicsScene()
 
         shell_labels = [
             "Filepath of background .png: ",
@@ -326,22 +326,20 @@ class ImpresysWindow(QMainWindow):
         self.bottom_buttons(['Shell', 'Begin shelling'], self.shellTab, self.shellForm)
 
         self.shellLayout.addLayout(self.shellForm)
-        self.shellLayout.addLayout(self.imgPreviewLayout)
         self.shellTab.setLayout(self.shellLayout)
 
-        self.tab_widget.addTab(self.shellTab, "")
-        self.tab_widget.setTabText(self.tab_widget.indexOf(self.shellTab), "Shell")
+        self.tabs.addTab(self.shellTab, "")
+        self.tabs.setTabText(self.tabs.indexOf(self.shellTab), "Shell")
 
-    def setSecondTab(self):
+    def setInsertTab(self):
         self.insTab = QWidget()
+        self.insTab.setObjectName("insTab")
+        self.insTab.setStatusTip("Insert an image into demo assets")
 
         self.insForm = QFormLayout(self.insTab)
         self.insForm.setVerticalSpacing(10)
         self.insForm.setHorizontalSpacing(5)
         self.insForm.setContentsMargins(15, 15, 15, 15)
-
-        self.insImgPreviewLayout = QGridLayout()
-        self.insImgPreview = QGraphicsScene()
 
         ins_labels = [
             "Filepath of insertion .png: ",
@@ -354,9 +352,6 @@ class ImpresysWindow(QMainWindow):
 
         self.insForm.addRow(QLabel())
 
-        self.tab_widget.addTab(self.insTab, "")
-        self.tab_widget.setTabText(self.tab_widget.indexOf(self.insTab), "Insert")
-
         self.ins_sects_sel = QLineEdit(self.insTab)
         self.insForm.addRow(QLabel("Sections to insert image into (separated by commas, see Help): ", self.insTab))
         self.insForm.addRow(self.ins_sects_sel)
@@ -366,6 +361,55 @@ class ImpresysWindow(QMainWindow):
         self.insForm.addRow(self.ins_steps_sel)
 
         self.bottom_buttons(['Insert', 'Begin insertion'], self.insTab, self.insForm)
+
+        self.tabs.addTab(self.insTab, "")
+        self.tabs.setTabText(self.tabs.indexOf(self.insTab), "Insert")
+
+    def setCropTab(self):
+        self.cropTab = QWidget()
+
+        self.cropForm = QFormLayout(self.cropTab)
+        self.cropForm.setVerticalSpacing(10)
+        self.cropForm.setHorizontalSpacing(5)
+        self.cropForm.setContentsMargins(15, 15, 15, 15)
+
+        cropLabels = [
+            "Left margin of assets to crop: ",
+            "Top margin of assets to crop: ",
+            "Right margin of assets to crop: ",
+            "Bottom margin of assets to crop: ",
+        ]
+
+        self.cropLeft = QLineEdit(self.cropTab)
+        self.cropTop = QLineEdit(self.cropTab)
+        self.cropRight = QLineEdit(self.cropTab)
+        self.cropBottom = QLineEdit(self.cropTab)
+
+        self.cropLayLeft = QHBoxLayout()
+        self.cropLayLeft.addWidget(QLabel(cropLabels[0], self.cropTab))
+        self.cropLayLeft.addWidget(self.cropLeft)
+        
+        self.cropLayTop = QHBoxLayout()
+        self.cropLayTop.addWidget(QLabel(cropLabels[1], self.cropTab))
+        self.cropLayTop.addWidget(self.cropTop)
+
+        self.cropLayRight = QHBoxLayout()
+        self.cropLayRight.addWidget(QLabel(cropLabels[2], self.cropTab))
+        self.cropLayRight.addWidget(self.cropRight)
+
+        self.cropLayBottom = QHBoxLayout()
+        self.cropLayBottom.addWidget(QLabel(cropLabels[3], self.cropTab))
+        self.cropLayBottom.addWidget(self.cropBottom)
+
+        self.cropForm.addRow(self.cropLayLeft)
+        self.cropForm.addRow(self.cropLayTop)
+        self.cropForm.addRow(self.cropLayRight)
+        self.cropForm.addRow(self.cropLayBottom)
+
+        self.bottom_buttons(['Crop', 'Begin Cropping'], self.cropTab, self.cropForm)
+
+        self.tabs.addTab(self.cropTab, "")
+        self.tabs.setTabText(self.tabs.indexOf(self.cropTab), "Crop")
 
     def setSectionTab(self):
         #@TODO Add real functionality here involving mass XML edits by tag, not just as an XML editor
@@ -390,8 +434,8 @@ class ImpresysWindow(QMainWindow):
         bot.addWidget(save_btn)
         self.sectionForm.addRow(bot)
 
-        self.tab_widget.addTab(self.sectionTab, "")
-        self.tab_widget.setTabText(self.tab_widget.indexOf(self.sectionTab), "Sectioning")
+        self.tabs.addTab(self.sectionTab, "")
+        self.tabs.setTabText(self.tabs.indexOf(self.sectionTab), "Section")
 
     def setAudioTab(self):
         #@TODO Add real functionality here involving mass XML edits by tag, not just as an XML editor
@@ -416,12 +460,14 @@ class ImpresysWindow(QMainWindow):
         bot.addWidget(save_btn)
         self.audioForm.addRow(bot)
 
-        self.tab_widget.addTab(self.audioTab, "")
-        self.tab_widget.setTabText(self.tab_widget.indexOf(self.audioTab), "Audio")
+        self.tabs.addTab(self.audioTab, "")
+        self.tabs.setTabText(self.tabs.indexOf(self.audioTab), "Audio")
 
     def setXmlTab(self):
         #@TODO Add real functionality here involving mass XML edits by tag, not just as an XML editor
         self.xmlTab = QWidget()
+        self.xmlTab.setObjectName("xmlTab")
+        self.xmlTab.setStatusTip("Perform bulk XML edits on demo")
         self.xmlForm = QFormLayout(self.xmlTab)
         self.xmlForm.setVerticalSpacing(20)
         self.xmlForm.setHorizontalSpacing(10)
@@ -443,9 +489,8 @@ class ImpresysWindow(QMainWindow):
         bot.addWidget(save_btn)
         self.xmlForm.addRow(bot)
 
-        self.tab_widget.addTab(self.xmlTab, "")
-        self.tab_widget.setTabText(self.tab_widget.indexOf(self.xmlTab), "XML")
-
+        self.tabs.addTab(self.xmlTab, "")
+        self.tabs.setTabText(self.tabs.indexOf(self.xmlTab), "XML")
 
     #----------UI ELEMENTS-----------------#
 
@@ -562,6 +607,14 @@ class ImpresysWindow(QMainWindow):
             self.submit_btn.clicked.connect(self.shell_submit)
         elif tab is self.insTab:
             self.submit_btn.clicked.connect(self.ins_submit)
+        elif tab is self.cropTab:
+            self.submit_btn.clicked.connect(self.crop_submit)
+        elif tab is self.sectionTab:
+            self.submit_btn.clicked.connect(self.section_submit)
+        elif tab is self.audioTab:
+            self.submit_btn.clicked.connect(self.audio_submit)
+        else:
+            self.submit_btn.clicked.connect(lambda x: print(x))
         bot.addWidget(self.close_btn)
         bot.addStretch()
         bot.addWidget(self.submit_btn)
@@ -591,10 +644,8 @@ class ImpresysWindow(QMainWindow):
             self.load_demo()
 
     def browse_script(self, tnum):
-        """
         options = QFileDialog.Options()
         options |= QFileDialog.DontUseNativeDialog
-        """
         fileName, _ = QFileDialog.getOpenFileName(self,"Browse for .docx files", "","Word files (*.docx);;All Files (*)")
         self.script_tbox.setText(fileName)
         self.SCRIPT_PATH = fileName
@@ -789,24 +840,29 @@ class ImpresysWindow(QMainWindow):
 
     @pyqtSlot()
     def shell_submit(self):
-        demo_dir = self.demo_tbox.text()
-        bg_img_dir = self.img_tbox1.text()
-        bg_img_loc = None
-        bg_img_size = None
+        to_sect = [s.strip() for s in self.sh_sects_sel.text().split(",")]
+        bg_path = self.img_tbox1.text()
+        asset_new_coord = None
+        asset_new_size = None
+        shell_path = None
+        shell_new_coord = None
+        shell_new_size = None
         if ((len(self.shlocx.text()) > 0 and len(self.shlocy.text()) > 0) and
            (len(self.shsizex.text()) > 0 and len(self.shsizey.text()) > 0)):
-            bg_img_loc = (int(self.shlocx.text()), int(self.shlocy.text()))
-            bg_img_size = (int(self.shsizex.text()), int(self.shsizey.text()))
-        shell_img_tbox = None; shell_img_loc = None; shell_img_size = None;
-        to_shell = [s.strip() for s in self.sh_sects_sel.text().split(",")]
+            asset_new_coord = (int(self.shlocx.text()), int(self.shlocy.text()))
+            asset_new_size = (int(self.shsizex.text()), int(self.shsizey.text()))
         if self.extra_on:
-            shell_img_tbox = self.shell_img_tbox.text()
+            shell_path = self.shell_img_tbox.text()
             if ((len(self.s_shlocx.text()) > 0 and len(self.s_shlocy.text()) > 0) and
                (len(self.s_shsizex.text()) > 0 and len(self.s_shsizey.text()) > 0)):
-                shell_img_loc = (int(self.s_shlocx.text()), int(self.s_shlocy.text()))
-                shell_img_size = (int(self.s_shsizex.text()), int(self.s_shsizey.text()))
-        print(demo_dir, bg_img_dir, bg_img_loc, bg_img_size, to_shell, self.extra_on, shell_img_tbox, shell_img_loc, shell_img_size)
+                shell_new_coord = (int(self.s_shlocx.text()), int(self.s_shlocy.text()))
+                shell_new_size = (int(self.s_shsizex.text()), int(self.s_shsizey.text()))
         """
+        print(f"bg_path: {bg_path}")
+        print(f"asset_new_coord: {}, asset_new_size: {}", asset_new_loc, asset_new_size)
+        printf("to_sect: {}", to_sect)
+        printf("shell_path: {}", shell_path)
+        printf("shell_new_coord: {}, shell_new_size: {}", shell_new_coord, shell_new_size)
         self.shellProg = QProgressDialog("Shelling asset files...", "Cancel", 0, 100)
         self.shellProg.setWindowTitle("Impresys Utilities - Shelling...")
         self.shellProg.setWindowIcon(QIcon(SCRIPTDIR+os.path.sep+'logo.png'))
@@ -814,8 +870,15 @@ class ImpresysWindow(QMainWindow):
         self.shellProg.show()
         """
         self.statusbar.showMessage("Shelling...")
-        self.image_paste(demo_dir, bg_img_dir, bg_img_loc, bg_img_size, typ='shell', sect=to_shell, 
-                         sep=self.extra_on, s_img_path=shell_img_tbox, s_img_loc=shell_img_loc, s_img_size=shell_img_size)
+        if all(bg_path, asset_new_size, asset_new_coord):
+            self.demo.shell_assets(
+                to_sect = to_shell,
+                bg_path = bg_path,
+                asset_new_coord = asset_new_coord,
+                asset_new_size = asset_new_size,
+                shell_path = shell_path,
+                shell_new_coord = shell_new_coord,
+                shell_new_size = shell_new_size)
         self.statusbar.showMessage("Finished shelling!")
         #self.shellProg.setWindowTitle("Impresys Utilities - Shelling completed!")
         print("Shelling finished")
@@ -833,7 +896,7 @@ class ImpresysWindow(QMainWindow):
             fg_img_size = (int(self.inssizex.text()), int(self.inssizey.text()))
         print(demo_dir, fg_img_dir, fg_img_loc, fg_img_size)
         self.statusbar.showMessage("Beginning insertion...")
-        self.image_paste(demo_dir, fg_img_dir, fg_img_loc, fg_img_size, typ='insert', sect=to_ins)
+        self._image_paste(demo_dir, fg_img_dir, fg_img_loc, fg_img_size, typ='insert', sect=to_ins)
         self.statusbar.showMessage("Insertion complete!")
         print("Insertion finished!")
         '''
@@ -843,6 +906,26 @@ class ImpresysWindow(QMainWindow):
         self.insProg.setGeometry(10, 10, 300, 100)
         '''
         #self.image_paste(props...)
+    @pyqtSlot()
+    def crop_submit(self):
+        dims = (int(i) for i in [self.cropLeft.text(), self.cropTop.text(), \
+            self.cropRight.text(), self.cropBottom.text()])
+        # printf("dims: {}", dims)
+        self.statusbar.showMessage("Beginning cropping...")
+        self.demo.crop_assets(dims)
+        self.statusbar.showMessage("Cropping complete!")
+
+    @pyqtSlot()
+    def section_submit(self):
+        self.statusbar.showMessage("Beginning sectioning")
+        self.demo.section_demo()
+        self.statusbar.showMesage("Finished sectioning!")
+        
+    @pyqtSlot()
+    def audio_submit(self):
+        self.statusbar.showMessage("Beginning audio attachment")
+        self.demo.add_audio()
+        self.statusbar.showMesage("Finished attaching audio!")
 
     def open_about(self):
         about = QDialog(self)
@@ -884,7 +967,10 @@ class ImpresysWindow(QMainWindow):
     def preview_img(self):
         self.setGeometry(10, 10, 800, 450)
 
-    def image_paste(self, demo_path, image_path, img_loc: Tuple[int, int], img_size: Tuple[int, int], typ='shell', sect=[], 
+    def image_crop(self, dims):
+        self.demo.crop_assets(dims)
+
+    def _image_paste(self, demo_path, image_path, img_loc: Tuple[int, int], img_size: Tuple[int, int], typ='shell', sect=[], 
                     sep=False, s_img_path=None, s_img_loc: Tuple[int, int]=None, s_img_size: Tuple[int, int]=None):
 
         bg_img_size = (1920, 1080)
@@ -950,7 +1036,7 @@ class ImpresysWindow(QMainWindow):
                     scale = float((fg_img_size[0] * fg_img_size[1]) / (bg_img_size[0] * bg_img_size[1]))
                     cbox.find('TextRect').find('FontSize').text = str(int(scale * font_size) + 2)
                 return new, old
-            return None
+            return ([0.0], [0.0])
 
         for chapter in list(root.iter('Chapter')):
             section = chapter.find('XmlName').find('Name').text

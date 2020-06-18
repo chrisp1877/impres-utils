@@ -161,8 +161,7 @@ class Step:
         return (self.img, self.hover)
 
     def set_text(self, tp: str = "", ci: str = "", img: str = ""):
-        self.tp.text = tp
-        self.ci.text = ci
+        self.tp.text, self.ci.text = ci, tp
         if tp != "":
             self.tp.words = self.tp.get_words()
 

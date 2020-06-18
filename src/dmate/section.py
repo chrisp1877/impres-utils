@@ -131,13 +131,9 @@ class Section:
         else:
             return self.iter()
 
-    # make this a generator?
     def __iter__(self):
         return iter(self.steps)
     
-    def __next__(self):
-        pass
-
     def __getitem__(self, step_i: int):
         return self.steps[step_i]
 

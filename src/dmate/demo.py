@@ -10,6 +10,7 @@ from dmate.step import Step
 from dmate.script import Script, TextBox
 from dmate.audio import Audio
 from etc.utils import validate_path, timefunc, logger
+import dmate.demo_tags as dt
 from collections import deque, namedtuple
 from PIL import Image
 import shutil
@@ -30,7 +31,7 @@ class Demo:
         self.is_sectioned = is_sectioned
         self.audio_attached = audio_attached
         self.title = "" 
-        self.res = (1920, 1080) #TODO make changeable?
+        self.res = (0, 0) #TODO make changeable?
         self.len, self.sect_len = 0, 0
         self.sections: List[Section] = []
         self.steps: List[Step] = []
@@ -108,6 +109,7 @@ class Demo:
                         .format(i, sect.title, len(sect), len(script.tp)))
                     return False
         print("Script length, demo length: " + str(len(script)) + ", " + str(self.len))
+        self.res = self.get_res()
         return True
 
     def matches_audio(self, audio: Audio = None, by_tp: bool = True):
@@ -279,40 +281,26 @@ class Demo:
     def handle_scroll_steps(self, idx: int):
         pass
 
+    def set_res(self):
+        y, x, _ = Image.open(str(self[0][0].img)).shape
+        self.res, dt.DEMO_RES = (x, y), (x, y)
+
     # roadblock: ID? 
     def duplicate_step(self, idx: int, as_pacing: bool = False, before: bool = True):
-        #new_guid = step.gen_guid()
+        #TODO Figure out how to properly update LXML ETree with steps in object list
         step = self.steps[idx]
-        #step_xml = deepcopy()
-        #idx = step.getparent().index(step) if before else step.getparent().index(step) + 1
-        #step.getparent().insert(idx, step_xml)
-        #asset_path = PurePath(Path(self.path.parent), Path(step.find("StartPicture/AssetsDirectory").text))
-        #if as_pacing:
-        #    is_active = step.getparent().getparent().find("IsActive").text
-        #    step_delay = step.find("StepDelay").text
         return step
 
     def consecutive_tp(self, step: Step, counter: int = 0, tp: bool = True):
-        #curr_tp = step.tp.is_valid(self.tp[idx])
-        #next_tp = step.tp.is_valid_tp(self.tp[idx+counter])
-        #if counter == 0 and ((not curr_tp and tp) or (curr_tp and not tp)):
-        #    return -1
-        #if (next_tp and not tp) or (not next_tp and tp):
-        #    return counter
-        #return self.consecutive_tp(idx, counter+1, tp)
         pass
 
     def clear_script(self, step_i: int = None, sect_i: int = None, click: bool=True, tp: bool=True):
         if step_i is not None:
-            if click:
-                pass
-            if tp:
-                pass
+            if click: pass
+            if tp: pass
         if sect_i is not None:
-            if click:
-                pass
-            if tp:
-                pass
+            if click: pass
+            if tp: pass
 
     def write(self, path: str = "", append: str = ""):
         tree = ET.ElementTree(self.root)
@@ -343,31 +331,85 @@ class Demo:
     def update(self):
         pass
 
+    def crop_assets(self, dims: Tuple[int, int, int, int]):
+        """
+        Crops all assets in provided sections/all assets in demo (if to_sect=[])
+        crop_dims are provided in the order (L, U, R, D) and are measured as
+        PIXELS from the directional margin of the asset images
+        NOTE: Keep this separate from shelling/insertion -- those fxns are way too bloated already
+        TODO: Implement ability to fill bg with black for section-selective cropping
+        """
+        if dims[0]+dims[2] >= self.res[0] or dims[1]+dims[3]:
+            raise Exception("Cropping dimensions exceed the size of image")
+
+        asset_new_size = (demo.res[0] - dims[0] - dims[2], demo.res[1] - dims[1] - dims[3]) 
+        rx, ry = tuple(map(lambda z: z[0]/z[1], zip(asset_new_size, self.res)))
+
+        for step in self.iter_steps_in_sects(sections):
+            step.transform_coords(scale=(rx, ry), offset=(asset_new_coord))
+            for img in step.assets.glob("*.png"):
+                asset = Image.open(img)
+                asset = asset.crop(dims)
+                if crop_dims is not None:
+                    asset = asset.crop(crop_dims)
+                asset_resize = asset.resize(asset_new_size, Image.ANTIALIAS)
+                curr_img.paste(asset_resize, asset_new_coord, asset_resize.convert('RGBA'))
+                curr_img.save(str(step.img))
+        
+        self.res, dt.DEMO_RES = asset_new_size, asset_new_size
+
     def shell_assets(self, 
-                    to_sect: List[str], 
-                    bg_img_path: str, 
-                    asset_new_coord: Tuple[int, int],
-                    asset_new_size: Tuple[int, int],
-                    shell_img_path: str = None,
-                    shell_img_coord: Tuple[int, int] = None,
-                    shell_img_size: Tuple[int, int] = None
+                    to_sect: List[str], # SECTIONS TO APPLY SHELLING. Empty ([]) list -> all sections affected.
+                    bg_path: str, # PATH OF LOWEST Z-INDEX BG IMG. If bg img dims > demo asset dims, demo res set to bg img res 
+                    asset_new_coord: Tuple[int, int], # FROM TOP LEFT OF BG IMG, where foremost top-left point of assets will be placed
+                    asset_new_size: Tuple[int, int], # SIZE OF ASSETS AFTER RESIZE. Resize is performed before translating on bg img
+                    shell_path: str = None, # if provided, path of img to be placed on top of bg_img but below asset (must be smaller than asset) 
+                    shell_new_coord: Tuple[int, int] = None, # if provided, coordinates (as above) of shell img on bg img
+                    shell_new_size: Tuple[int, int] = None, # if provied, size (as above) of shell img on bg img
                     ):
+        """
+        Performs shelling on all/selected sections of demo. Options:
+        Only shelling: Loads image from bg_path, resizes and moves assets in to_sect to asset_new_size and asset_new_coord, then pastes assets on this image
+        Bg + shelling: Loads image from shell_path, resizes it to shell_new_size and pastes it onto shell_new_coord on bg. Then does shelling as above.
+        Crop assets: If crop_dims not none, crops all assets to crop_dims:((x0, y0), (x1, y1)) and sets demo res to new cropped size
+            -> SETS DEMO RES TO BG IMG DIMENSIONS
+        Use cases:
+            1. Taking asset images, shrinking to fit in BG image of same demo res: set bg_path 
+        """
         #TODO Check for exceptions in GUI? Including bounds < 0
         #TODO Back up asset image in backup folder before overwriting?
+        fit_res_to_bg: bool = False
         bound = lambda size, loc: tuple(map(sum, zip(size, loc)))
         exceeds_res = lambda bound: bound[0]>self.res[0] or bound[1]>self.res[1]
-        sections = [s.lower() for s in to_sect]
+        bg_dims_exceed_demo_res = lambda dims: dims[0]>self.res[0] and dims[1]>self.res[1]
+
         if exceeds_res(bound(asset_new_size, asset_new_coord)):
             raise Exception("Resized and relocated image beyond original boundaries")
-        bg_img = Image.open(bg_img_path)
-        if shell_img_path is not None:
-            if exceeds_res(bound(shell_img_size, shell_img_coord)):
+        if any(i < 0 for i in asset_new_coords + asset_new_size):
+            raise Exception("Negative values passed for bg dims")
+
+        sections = [s.lower() for s in to_sect]
+        bg_img = Image.open(bg_path)
+
+        if shell_path is not None:
+
+            if exceeds_res(bound(shell_new_size, shell_new_coord)):
                 raise Exception("Shell image dimensions beyond original boundaries")
-            shell_img = Image.open(shell_img_path)
-            shell_img_resize = shell_img.resize(shell_img_size, Image.ANTIALIAS)
-            bg_img.paste(shell_img_resize, shell_img_coord, shell_img_resize.convert('RGBA'))
-    
+            if any(i < 0 for i in shell_new_coords + shell_new_size):
+                raise Exception("Negative values passed for shell")
+
+            shell_img = Image.open(shell_path)
+            shell_img_resize = shell_img.resize(shell_new_size, Image.ANTIALIAS)
+            bg_img.paste(shell_img_resize, shell_new_coord, shell_img_resize.convert('RGBA'))
+
+        bg_width, bg_height, _ = bg_img.shape
+
+        if bg_dims_exceed_demo_res(bg_width, bg_height):
+            self.res = (bg_width, bg_height)
+            fit_res_to_bg = True
+
         rx, ry = tuple(map(lambda z: z[0]/z[1], zip(asset_new_size, self.res)))
+
         self.insert_img(to_sect, bg_img, "", asset_new_size, asset_new_coord)
         for step in self.iter_steps_in_sects(sections):
             step.transform_coords(scale=(rx, ry), offset=(asset_new_coord))
@@ -376,6 +418,7 @@ class Demo:
                 asset = Image.open(img)
                 asset_resize = asset.resize(asset_new_size, Image.ANTIALIAS)
                 curr_img.paste(asset_resize, asset_new_coord, asset_resize.convert('RGBA'))
+                curr_img.save(str(step.img))
 
     def insert_img(self, 
                     to_sect: List[str],
@@ -386,6 +429,7 @@ class Demo:
                     ):
         #TODO Find elegant way to implement boudnary checking for insertion only
         #     consider putting insert_img in shell_assets before transforming dims?
+        #TODO Finish
         sections = [s.lower() for s in to_sect]
         fg_img = Image.open(fg_img_path)
         for step in self.iter_steps_in_sects(sections):

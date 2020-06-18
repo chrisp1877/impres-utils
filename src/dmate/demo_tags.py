@@ -1,6 +1,6 @@
 #TODO; add default values for each
 
-DEMO_RES = (1920, 1080)
+DEMO_RES = (0, 0)
 
 STEP_IMG = "StartPicture"
 
