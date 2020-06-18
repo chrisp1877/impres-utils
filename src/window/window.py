@@ -17,7 +17,7 @@ from PyQt5.QtGui import (QIcon, QStandardItemModel, QStandardItem, )
 from PyQt5.QtCore import pyqtSlot, pyqtSignal, Qt, QFileSelector, QItemSelectionModel
 import lxml.etree as ET
 from PIL import Image
-from typing import List, Tuple
+from typing import List, Tuple, Dict
 from pathlib import Path
 from dmate.demo import Demo
 from dmate.script import Script
@@ -28,28 +28,22 @@ SCRIPTDIR = os.path.dirname(os.path.realpath(__file__))
 
 class ImpresysApplication(QApplication):
 
-    def __init__(self, debug=False):
-        if debug:
-            self.app = QApplication(sys.argv)
-            self.window = ImpresysWindow(debug=True)
-        else:
-            print("SETTING UP QApplication...")
-            self.app = QApplication(sys.argv)
-            print("SETTING UP ImpresysWindow...")
-            self.window = ImpresysWindow()
-            print("SETTING UP Window.show()...")
+    def __init__(self, debug=False, options={}):
+        self.app = QApplication(sys.argv)
+        self.window = ImpresysWindow(debug, options)
+        if options and options["START_GUI"]:
             self.window.show()
-            print("SETTING UP app.exec_()...")
             self.app.exec_()
 
 class ImpresysWindow(QMainWindow):
 
-    def __init__(self, debug=False):
+    def __init__(self, debug=False, **options):
         if not debug:
             super().__init__()
             self.DEMO_PATH = ""
             self.SCRIPT_PATH = ""
             self.AUDIO_PATH = ""
+            self.DEMO_RES = (0, 0)
             self.IMG_PATH = None
             self.SHELL_PATH = None
             self.SECTS = list()
