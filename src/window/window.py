@@ -28,37 +28,69 @@ SCRIPTDIR = os.path.dirname(os.path.realpath(__file__))
 
 class ImpresysApplication(QApplication):
 
-    def __init__(self):
-        self.app = QApplication(sys.argv)
-        self.window = ImpresysWindow()
-        self.window.show()
-        self.app.exec_()
+    def __init__(self, debug=False):
+        if debug:
+            self.app = QApplication(sys.argv)
+            self.window = ImpresysWindow(debug=True)
+        else:
+            print("SETTING UP QApplication...")
+            self.app = QApplication(sys.argv)
+            print("SETTING UP ImpresysWindow...")
+            self.window = ImpresysWindow()
+            print("SETTING UP Window.show()...")
+            self.window.show()
+            print("SETTING UP app.exec_()...")
+            self.app.exec_()
 
 class ImpresysWindow(QMainWindow):
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, debug=False):
+        if not debug:
+            super().__init__()
+            self.DEMO_PATH = ""
+            self.SCRIPT_PATH = ""
+            self.AUDIO_PATH = ""
+            self.IMG_PATH = None
+            self.SHELL_PATH = None
+            self.SECTS = list()
+            self.FG_LOC = [None, None]
+            self.FG_SIZE = [None, None]
+            self.SHELL_BG_SEPARATE = bool()
+            self.SHELL_LOC = [None, None]
+            self.SHELL_SIZE = [None, None]
+            self.SECTS_SELECTED = set()
+            self.STEPS_SELECTED = set()
 
-        self.DEMO_PATH = ""
-        self.SCRIPT_PATH = ""
-        self.AUDIO_PATH = ""
-        self.IMG_PATH = None
-        self.SHELL_PATH = None
-        self.SECTS = list()
-        self.FG_LOC = [None, None]
-        self.FG_SIZE = [None, None]
-        self.SHELL_BG_SEPARATE = bool()
-        self.SHELL_LOC = [None, None]
-        self.SHELL_SIZE = [None, None]
-        self.SECTS_SELECTED = set()
-        self.STEPS_SELECTED = set()
-
-        self.title = 'Impresys Utilities'
-        self.left = 10
-        self.top = 10
-        self.width = 950
-        self.height = 550
-        self.setupUi()
+            self.title = 'Impresys Utilities'
+            self.left = 10
+            self.top = 10
+            self.width = 950
+            self.height = 550
+            self.setupUi()
+        else:
+            super().__init__()
+            self.AUDIO_PATH = ""
+            self.SCRIPT_PATH = ""
+            self.DEMO_PATH = r"C:\\Users\\Jess\\..TEST\\RSM - Disease Outbreak and Management System - phone installer [R1 V5H].demo"
+            to_sect = ["Section 6", "Section 7", "Section 8", "Section 9"]
+            bg_path = r"C:\\Users\\\Jess\Pictures\hover.png"
+            shell_path = r"C:\Users\Jess\Pictures\hover.png"
+            asset_new_size = (300, 800)
+            asset_new_coord = (600, 100)
+            shell_new_size = (1500, 750)
+            shell_new_coord = (200, 50)
+            print("LOADING DEMO...")
+            self.demo = Demo(path=self.DEMO_PATH, script_path=self.SCRIPT_PATH, audio_dir=self.AUDIO_PATH)
+            print("RUNNING self.demo.shell_assets()")
+            self.demo.shell_assets(
+                    to_sect = to_sect,
+                    bg_path = bg_path,
+                    asset_new_coord = asset_new_coord,
+                    asset_new_size = asset_new_size,
+                    shell_path = shell_path,
+                    shell_new_coord = shell_new_coord,
+                    shell_new_size = shell_new_size)
+            
 
     def setupUi(self):
         self.setWindowTitle(self.title)
@@ -670,7 +702,7 @@ class ImpresysWindow(QMainWindow):
     def load_demo(self):
         def Q(ls: list): return [QStandardItem(q) for q in ls]
         self.demo = Demo(path=self.DEMO_PATH, script_path=self.SCRIPT_PATH, audio_dir=self.AUDIO_PATH)
-        self.xmlEditor.setText(self.demo.xml())
+        if not dt.DEBUG: self.xmlEditor.setText(self.demo.xml())
         self.demo_title = QLabel(self.demo.title)
         self.demo_model = QStandardItemModel(self.demo_tree)
         self.demo_model.setHorizontalHeaderLabels([self.demo.title, "Has TP", "Animated"])
@@ -870,9 +902,9 @@ class ImpresysWindow(QMainWindow):
         self.shellProg.show()
         """
         self.statusbar.showMessage("Shelling...")
-        if all(bg_path, asset_new_size, asset_new_coord):
-            self.demo.shell_assets(
-                to_sect = to_shell,
+        # if all(bg_path, asset_new_size, asset_new_coord):
+        self.demo.shell_assets(
+                to_sect = to_sect,
                 bg_path = bg_path,
                 asset_new_coord = asset_new_coord,
                 asset_new_size = asset_new_size,
@@ -908,9 +940,10 @@ class ImpresysWindow(QMainWindow):
         #self.image_paste(props...)
     @pyqtSlot()
     def crop_submit(self):
-        dims = (int(i) for i in [self.cropLeft.text(), self.cropTop.text(), \
-            self.cropRight.text(), self.cropBottom.text()])
-        # printf("dims: {}", dims)
+        dims: Tuple[int, int, int, int] = (int(self.cropLeft.text()), int(self.cropTop.text()), \
+            int(self.cropRight.text()), int(self.cropBottom.text()))
+        print(f"dims: {dims}")
+        print(f"demo res: {self.demo.res}")
         self.statusbar.showMessage("Beginning cropping...")
         self.demo.crop_assets(dims)
         self.statusbar.showMessage("Cropping complete!")
@@ -1005,8 +1038,8 @@ class ImpresysWindow(QMainWindow):
             out = []
             if len(coords) > 2: # if BOX coordinates (T, B, L, R)
                 for i in range(4):
-                    if i < 2: out.append(float(coords[i] * ry + fg_img_loc[1]))
-                    else: out.append(float(coords[i] * rx + fg_img_loc[0]))
+                    if i < 2: out.append(float((coords[i] * ry) + fg_img_loc[1]))
+                    else: out.append(float((coords[i] * rx) + fg_img_loc[0]))
             elif len(coords) <= 2: # if CLICK coordinates (X, Y)
                 out.append(float(coords[0] * rx + fg_img_loc[0]))
                 out.append(float(coords[1] * ry + fg_img_loc[1]))

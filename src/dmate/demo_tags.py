@@ -1,5 +1,7 @@
 #TODO; add default values for each
 
+DEBUG = True
+
 DEMO_RES = (0, 0)
 
 STEP_IMG = "StartPicture"
@@ -125,10 +127,10 @@ BOX_PROPS = {
 DIR_KEYS = ["x0", "y0", "x1", "y1"]
 
 DIRS = {
-    "x0": {"tag": "Left", "type": int}, 
-    "y0": {"tag": "Top", "type": int}, 
-    "x1": {"tag": "Right", "type": int},
-    "y1": {"tag": "Bottom", "type": int}, 
+    "x0": {"tag": "Left", "type": float}, 
+    "y0": {"tag": "Top", "type": float}, 
+    "x1": {"tag": "Right", "type": float},
+    "y1": {"tag": "Bottom", "type": float}, 
 }
 
 MOUSE_X, MOUSE_Y = "MouseCoordinates/X", "MouseCoordinates/Y"

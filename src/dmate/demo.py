@@ -31,10 +31,11 @@ class Demo:
         self.is_sectioned = is_sectioned
         self.audio_attached = audio_attached
         self.title = "" 
-        self.res = (0, 0) #TODO make changeable?
+        self.res: Tuple[int, int] = (0, 0) #TODO make changeable?
         self.len, self.sect_len = 0, 0
         self.sections: List[Section] = []
         self.steps: List[Step] = []
+        self.lsect, self.lstep, self.lstepprops = [], [], []
         try:
             self.loaded = self.load(path)
         except BaseException as exc:
@@ -63,6 +64,12 @@ class Demo:
             self.id = self.root.find("ID").text
             self.title = self.root.find("DemoName").text
             for i, sect in enumerate(self.root.findall('Chapters/Chapter')):
+                self.lstep.append([])
+                self.lstepprops.append([])
+                self.lsect.append(sect)
+                for j, step in enumerate(sect.findall("Steps/Step")):
+                    self.lstep[i].append(step)
+                    self.lstepprops[i].append(step.find("StartPicture"))
                 section = Section(elem=sect, demo_dir=self.file, idx=i, demo_idx=self.len)
                 self.len += len(section)
                 self.sections.append(section)
@@ -84,6 +91,7 @@ class Demo:
         if self.audio.loaded:
             if self.matches_audio(self.audio, by_tp=True):
                 self.set_audio(self.audio)
+        self.set_res()
 
     def matches_script(self, script: Script = None, naive: bool = True) -> bool:
         # make advanced algorithm to check non strict sect idx and step idx, optional
@@ -109,7 +117,6 @@ class Demo:
                         .format(i, sect.title, len(sect), len(script.tp)))
                     return False
         print("Script length, demo length: " + str(len(script)) + ", " + str(self.len))
-        self.res = self.get_res()
         return True
 
     def matches_audio(self, audio: Audio = None, by_tp: bool = True):
@@ -282,8 +289,10 @@ class Demo:
         pass
 
     def set_res(self):
-        y, x, _ = Image.open(str(self[0][0].img)).shape
-        self.res, dt.DEMO_RES = (x, y), (x, y)
+        x, y = Image.open(str(self[0][0].img)).size
+        print(x, y)
+        self.res: Tuple[int, int] = (x, y)
+        dt.DEMO_RES: Tuple[int, int] = (x, y)
 
     # roadblock: ID? 
     def duplicate_step(self, idx: int, as_pacing: bool = False, before: bool = True):
@@ -339,7 +348,9 @@ class Demo:
         NOTE: Keep this separate from shelling/insertion -- those fxns are way too bloated already
         TODO: Implement ability to fill bg with black for section-selective cropping
         """
-        if dims[0]+dims[2] >= self.res[0] or dims[1]+dims[3]:
+        dx = dims[0] + dims[2]
+        dy = dims[1] + dims[3]
+        if (dx >= self.res[0]) or (dy >= self.res[1]):
             raise Exception("Cropping dimensions exceed the size of image")
 
         asset_new_size = (demo.res[0] - dims[0] - dims[2], demo.res[1] - dims[1] - dims[3]) 
@@ -373,53 +384,79 @@ class Demo:
         Bg + shelling: Loads image from shell_path, resizes it to shell_new_size and pastes it onto shell_new_coord on bg. Then does shelling as above.
         Crop assets: If crop_dims not none, crops all assets to crop_dims:((x0, y0), (x1, y1)) and sets demo res to new cropped size
             -> SETS DEMO RES TO BG IMG DIMENSIONS
-        Use cases:
-            1. Taking asset images, shrinking to fit in BG image of same demo res: set bg_path 
+        NOTE: Currently, choosing an image with larger resolution than the demo currently disables the ability
+              to do shelling on a per-section basis
         """
         #TODO Check for exceptions in GUI? Including bounds < 0
         #TODO Back up asset image in backup folder before overwriting?
+        #TODO Allow user to choose to crop image THEN resize
+        if dt.DEBUG:
+            print("STARTING: Shelling assets...")
+
         fit_res_to_bg: bool = False
+        sections = [s.lower() for s in to_sect]
+        bg_img = Image.open(bg_path)
+        bg_dims = bg_img.size
+
+        if self.res[0] < bg_dims[0] or self.res[1] < bg_dims[1]:
+            self.res = bg_dims
+            fit_res_to_bg = True
+            sections = []
+
         bound = lambda size, loc: tuple(map(sum, zip(size, loc)))
         exceeds_res = lambda bound: bound[0]>self.res[0] or bound[1]>self.res[1]
-        bg_dims_exceed_demo_res = lambda dims: dims[0]>self.res[0] and dims[1]>self.res[1]
+
+        print(f"DEMO RES: {self.res}")
+        print(f"ASSET NEW SIZE: {asset_new_size}")
+        print(f"ASSET NEW COORD: {asset_new_coord}")
 
         if exceeds_res(bound(asset_new_size, asset_new_coord)):
             raise Exception("Resized and relocated image beyond original boundaries")
-        if any(i < 0 for i in asset_new_coords + asset_new_size):
+        if any(i < 0 for i in asset_new_coord + asset_new_size):
             raise Exception("Negative values passed for bg dims")
 
-        sections = [s.lower() for s in to_sect]
-        bg_img = Image.open(bg_path)
-
         if shell_path is not None:
-
             if exceeds_res(bound(shell_new_size, shell_new_coord)):
                 raise Exception("Shell image dimensions beyond original boundaries")
-            if any(i < 0 for i in shell_new_coords + shell_new_size):
+            if any(i < 0 for i in shell_new_coord + shell_new_size):
                 raise Exception("Negative values passed for shell")
 
             shell_img = Image.open(shell_path)
             shell_img_resize = shell_img.resize(shell_new_size, Image.ANTIALIAS)
             bg_img.paste(shell_img_resize, shell_new_coord, shell_img_resize.convert('RGBA'))
 
-        bg_width, bg_height, _ = bg_img.shape
-
-        if bg_dims_exceed_demo_res(bg_width, bg_height):
-            self.res = (bg_width, bg_height)
-            fit_res_to_bg = True
-
-        rx, ry = tuple(map(lambda z: z[0]/z[1], zip(asset_new_size, self.res)))
-
-        self.insert_img(to_sect, bg_img, "", asset_new_size, asset_new_coord)
-        for step in self.iter_steps_in_sects(sections):
-            step.transform_coords(scale=(rx, ry), offset=(asset_new_coord))
-            for img in step.assets.glob("*.png"):
-                curr_img = bg_img.copy()
-                asset = Image.open(img)
-                asset_resize = asset.resize(asset_new_size, Image.ANTIALIAS)
-                curr_img.paste(asset_resize, asset_new_coord, asset_resize.convert('RGBA'))
-                curr_img.save(str(step.img))
-
+            
+        print(bg_dims)
+        rx = float(asset_new_size[0] / bg_dims[0])
+        ry = float(asset_new_size[1] / bg_dims[1])
+        offset_x = asset_new_coord[0]
+        offset_y = asset_new_coord[1]
+        if dt.DEBUG:
+            print(rx, offset_x)
+            print(ry, offset_y)
+        #rx, ry = tuple(map(lambda z: float(z[0]/z[1]), zip(asset_new_size, bg_dims)))
+        #self.insert_img(to_sect, bg_img, "", asset_new_size, asset_new_coord)
+        if dt.DEBUG: print("right before for loop")
+        print(len(self.sections))
+        for sect_i, sect in enumerate(self.sections):
+            if sections == [] or sect.title.lower() in sections:
+                for step_i, step in enumerate(sect.steps):
+                    if dt.DEBUG: 
+                        print(f"STARTING SHELLING: Sect {sect_i}, step {step_i}")
+                    #self.transform_coords(step_idx=step_i, sect_idx=sect_i, scale=(rx, ry), offset=(asset_new_coord))
+                    step.transform_coords(scale=(rx, ry), offset=(offset_x, offset_y))
+                    for img in step.assets.glob("*.Png"):
+                        curr_img = bg_img.copy()
+                        asset = Image.open(img)
+                        asset_resize = asset.resize(asset_new_size, Image.ANTIALIAS)
+                        curr_img.paste(asset_resize, asset_new_coord, asset_resize.convert('RGBA'))
+                        curr_img.save(str(img))
+                        if dt.DEBUG:
+                            print(f"SHELLED: {img}")
+                            print(f"FINISHED: Section {sect_i}, step {step_i}")
+        if dt.DEBUG: print(self.res)
+        self.write(self.file)
+        
     def insert_img(self, 
                     to_sect: List[str],
                     fg_img_obj: Image,
@@ -431,13 +468,14 @@ class Demo:
         #     consider putting insert_img in shell_assets before transforming dims?
         #TODO Finish
         sections = [s.lower() for s in to_sect]
-        fg_img = Image.open(fg_img_path)
-        for step in self.iter_steps_in_sects(sections):
-            for img in step.assets.glob("*.png"):
-                curr_img = fg_img.copy()
-                asset = Image.open(img)
-                asset_resize = asset.resize(fg_img_size, Image.ANTIALIAS)
-                curr_img.paste(asset_resize, fg_img_coord, asset_resize.convert('RGBA'))
+        fg_img = fg_img_obj
+        for sect_i, sect in enumerate(self):
+            if to_sect == [] or sect.title in to_sect:
+                for img in step.assets.glob("*.png"):
+                    curr_img = fg_img.copy()
+                    asset = Image.open(img)
+                    asset_resize = asset.resize(fg_img_size, Image.ANTIALIAS)
+                    curr_img.paste(asset_resize, fg_img_coord, asset_resize.convert('RGBA'))
 
     def clear_talking_points(self, i: int):
         pass
@@ -484,7 +522,7 @@ class Demo:
             if sect != [] and sect not in sections:
                 continue
             for step in sect:
-                yield step
+                yield (sect.idx, step)
                 
     def __iter__(self):
         return DemoSectionIterator(self)

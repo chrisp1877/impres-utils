@@ -37,8 +37,9 @@ class Step:
         self.loaded = self.load()
 
     def load(self):
+        s = []
         self.props = self.root.find("StartPicture")
-        self.boxes = {k:dict.fromkeys({*v["props"], *dt.DIRS}, []) for k, v in dt.BOX_PROPS.items()}
+        self.boxes = {k:dict.fromkeys({*v["props"], *dt.DIRS}, None) for k, v in dt.BOX_PROPS.items()}
         self.assets = Path(self.demo_dir, self.props.find("AssetsDirectory").text)
         self.img = PurePath(self.assets, self.props.find("PictureFile").text)
         self.time = self.props.find("Time").text
@@ -60,16 +61,17 @@ class Step:
             except:
                 setattr(self, prop, None)
         for box_key, box_dict in dt.BOX_PROPS.items():
-            if (self.props.find(tag := box_dict["tag"])) is not None:
-                box_props = {**box_dict["props"], **dt.DIRS}
-                for box in self.props.findall(tag+"/"+tag[:-1]):
-                    for prop, prop_vals in box_props.items():
+            box_props = {**box_dict["props"], **dt.DIRS}
+            tag = box_dict["tag"]
+            props = (self.props.findall(tag+"/"+tag[:-1]))
+            if props is not None:
+                for prop, prop_vals in box_props.items():
+                    self.boxes[box_key][prop] = []
+                    for i, box in enumerate(props):
                         prop_tag, prop_type = prop_vals["tag"], prop_vals["type"]
-                        try:
+                        if (box.find(prop_tag) is not None):
                             box_text = prop_type(box.find(prop_tag).text)
                             self.boxes[box_key][prop].append(box_text)
-                        except:
-                            pass
             if box_key == 'hotspot':
                 if (self.boxes[box_key]['x1'][0] == dt.DEMO_RES[0] and 
                     self.boxes[box_key]['y1'][0] == dt.DEMO_RES[1]):
@@ -95,45 +97,75 @@ class Step:
         self.props.find("VideoRects/VideoRect/Video/VideoWidth").text = str(x)
         self.boxes["video"]["width"], self.boxes["video"]["height"] = x, y
     
-    def set_box_dims(self, box: str, x0 = None, y0 = None, x1 = None, y1 = None):
+    def set_box_dims(self, box: str, coords):
         """
         Input: Box type (str, ex "hotspot"), (x0, x1) int tuple, (y0, y1) int tuple
         Output: None. Sets step.box["prop"][dimension] to input value.
         """
-        if box in self.boxes:
-            tag = str(dt.BOX_PROPS[box]["tag"])
-            xmlbox = self.props.find(tag+"/"+tag[:-1])
-            for i in range(len(getattr(self, "box")["x1"])):
-                for d, dim in zip(dt.DIR_KEYS, [x0, y0, x1, y1]):
-                    self.boxes[box][d][i] = dim
-                    xmlbox.find(dt.DIRS[d]["tag"]).text = str(dim)
+        tag = str(dt.BOX_PROPS[box]["tag"])
+        xmlbox = self.props.find(tag+"/"+tag[:-1])
+        for i in range(len(self.boxes[box]["x1"])):
+            for j, dim in enumerate(coords):
+                d = dt.DIR_KEYS[j]
+                self.boxes[box][d][i] = dim
+                xmlbox.find(dt.DIRS[d]["tag"]).text = str(int(dim))
+                print(dim, xmlbox.find(dt.DIRS[d]["tag"]).text)
+
 
     def transform_coords(self, scale: Tuple[float, float], offset: Tuple[float, float]):
         """
         Transforms all coordinate-based and height/widgth/size based properties of
-        this step by a provided scaling and offset factor
+        this step by a provided scaling and offset factor, LTRB
         """
-        (rx, ry), (ox, oy) = scale, offset
 
-        def transf(*coord: int, offset: bool = True):
-            if not offset:
-                return [int(rx*c) if i%2==0 else int(ry*c) for i,c in enumerate(coord)]
-            return [int(rx*c+ox) if i%2==0 else int(ry*c+oy) for i,c in enumerate(coord)]
+        (rx, ry) = scale
+        (ox, oy) = offset
+
+        def transf(coord: List[int], use_offset: bool = True):
+            out = []
+            for i, c in enumerate(coord):
+                if i%2 == 0:
+                    if use_offset:
+                        out.append(float(c * rx + ox))
+                    else:
+                        out.append(float(c * rx))
+                else:
+                    if use_offset:
+                        out.append(float(c * ry + oy))
+                    else:
+                        out.append(float(c * ry))
+            return out
+
+        def transform(coords: List[float]) -> List[float]: #-> [top, bottom, left, right]
+            out = []
+            if len(coords) > 2: # if BOX coordinates (T, B, L, R)
+                for i in range(4):
+                    if i % 2 == 0: out.append(float((coords[i] * ry) + oy))
+                    else: out.append(float((coords[i] * rx) + ox))
+            elif len(coords) <= 2: # if CLICK coordinates (X, Y)
+                out.append(float(coords[0] * rx + ox))
+                out.append(float(coords[1] * ry + oy))
+            return out
 
         for box, box_props in self.boxes.items():
             for i in range(len(box_props['x1'])):
-                coords = transf(*[box_props[d][i] for d in dt.DIR_KEYS])
-                self.set_box_dims(box, *coords)
-            if box == "video":
-                w, h = transf(*[box_props["width"][i], box_props["height"][i]], False)
-                self.set_video_dims(w, h)
-            if box == "text":
-                tag = "TextRects/TextRect/FontSize"
-                self.boxes[box]["size"][i] *= (rx*ry + 1)
-                self.props.find(tag).text = str(box_props["size"][i])
+                dims = [box_props[d][i] for d in dt.DIR_KEYS]
+                print("OLD: " + str(dims))
+                coords = transf(dims)
+                print("NEW: " + str(coords))
+                self.set_box_dims(box, coords)
+                if box == "video":
+                    w, h = transf([box_props["width"][i], box_props["height"][i]], False)
+                    self.set_video_dims(w, h)
+                if box == "text":
+                    tag = "TextRects/TextRect/FontSize"
+                    self.boxes[box]["size"][i] *= (rx*ry + 1)
+                    self.props.find(tag).text = str(box_props["size"][i])
         self.set_mouse(self.mouse[0]*rx+ox, self.mouse[1]*ry+oy)
         if self.hover is not None:
             self.set_mouse_hover(self.mouse_hover[0]*rx*ox, self.mouse_hover[1]*ry*oy)
+        if dt.DEBUG:
+            print(f"SHIFTED: Step {self.idx}")
         
         
 

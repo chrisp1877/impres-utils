@@ -1,6 +1,0 @@
-C:\Users\impresys\Documents\Test_demo\Manage Software Licenses with AWS License Manager - Revisons [R3 - V2].demo
-C:\Users\impresys\Pictures\bg.png
-240
-96
-1438
-894
