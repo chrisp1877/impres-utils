@@ -353,19 +353,15 @@ class Demo:
         if (dx >= self.res[0]) or (dy >= self.res[1]):
             raise Exception("Cropping dimensions exceed the size of image")
 
-        asset_new_size = (demo.res[0] - dims[0] - dims[2], demo.res[1] - dims[1] - dims[3]) 
+        asset_new_size = (self.res[0] - dims[0] - dims[2], self.res[1] - dims[1] - dims[3]) 
         rx, ry = tuple(map(lambda z: z[0]/z[1], zip(asset_new_size, self.res)))
 
-        for step in self.iter_steps_in_sects(sections):
-            step.transform_coords(scale=(rx, ry), offset=(asset_new_coord))
+        for step in self.iter_steps_in_sects(self.sections):
             for img in step.assets.glob("*.png"):
                 asset = Image.open(img)
-                asset = asset.crop(dims)
-                if crop_dims is not None:
-                    asset = asset.crop(crop_dims)
-                asset_resize = asset.resize(asset_new_size, Image.ANTIALIAS)
-                curr_img.paste(asset_resize, asset_new_coord, asset_resize.convert('RGBA'))
-                curr_img.save(str(step.img))
+                if dims is not None:
+                    asset = asset.crop(dims)
+                asset.save(str(img))
         
         self.res, dt.DEMO_RES = asset_new_size, asset_new_size
 
@@ -415,11 +411,11 @@ class Demo:
         if any(i < 0 for i in asset_new_coord + asset_new_size):
             raise Exception("Negative values passed for bg dims")
 
-        if shell_path is not None:
+        if shell_path is not None and shell_new_coord is not None and shell_new_size is not None:
             if exceeds_res(bound(shell_new_size, shell_new_coord)):
-                raise Exception("Shell image dimensions beyond original boundaries")
+                raise Exception("Shell image dimensions beyond original boundaries")                
             if any(i < 0 for i in shell_new_coord + shell_new_size):
-                raise Exception("Negative values passed for shell")
+                    raise Exception("Negative values passed for shell")
 
             shell_img = Image.open(shell_path)
             shell_img_resize = shell_img.resize(shell_new_size, Image.ANTIALIAS)

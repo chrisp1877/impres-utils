@@ -28,16 +28,16 @@ SCRIPTDIR = os.path.dirname(os.path.realpath(__file__))
 
 class ImpresysApplication(QApplication):
 
-    def __init__(self, debug=False, options={}):
+    def __init__(self, debug: bool,  options, debug_settings):
         self.app = QApplication(sys.argv)
-        self.window = ImpresysWindow(debug, options)
-        if options and options["START_GUI"]:
+        self.window = ImpresysWindow(debug, options, debug_settings)
+        if not debug:
             self.window.show()
             self.app.exec_()
 
 class ImpresysWindow(QMainWindow):
 
-    def __init__(self, debug=False, **options):
+    def __init__(self, debug, options, debug_settings):
         if not debug:
             super().__init__()
             self.DEMO_PATH = ""
@@ -65,8 +65,8 @@ class ImpresysWindow(QMainWindow):
             super().__init__()
             self.AUDIO_PATH = ""
             self.SCRIPT_PATH = ""
-            self.DEMO_PATH = r"C:\\Users\\Jess\\..TEST\\RSM - Disease Outbreak and Management System - phone installer [R1 V5H].demo"
-            to_sect = ["Section 6", "Section 7", "Section 8", "Section 9"]
+            self.DEMO_PATH = r"C:\\Users\\Jess\\..TEST\\RSM 3- Disease Outbreak and Management System - phone installer [R1 V5I].demo"
+            to_sect = []
             bg_path = r"C:\\Users\\\Jess\Pictures\hover.png"
             shell_path = r"C:\Users\Jess\Pictures\hover.png"
             asset_new_size = (300, 800)
@@ -885,10 +885,11 @@ class ImpresysWindow(QMainWindow):
                 shell_new_size = (int(self.s_shsizex.text()), int(self.s_shsizey.text()))
         """
         print(f"bg_path: {bg_path}")
-        print(f"asset_new_coord: {}, asset_new_size: {}", asset_new_loc, asset_new_size)
-        printf("to_sect: {}", to_sect)
-        printf("shell_path: {}", shell_path)
-        printf("shell_new_coord: {}, shell_new_size: {}", shell_new_coord, shell_new_size)
+        print(f"asset_new_coord: {}, asset_new_size: {}", asset_new_coord, asset_new_size)
+        print(f"to_sect: {}", to_sect)
+        print(f"shell_path: {}", shell_path)
+        print(f"shell_new_coord: {}, shell_new_size: {}", shell_new_coord, shell_new_size)
+        
         self.shellProg = QProgressDialog("Shelling asset files...", "Cancel", 0, 100)
         self.shellProg.setWindowTitle("Impresys Utilities - Shelling...")
         self.shellProg.setWindowIcon(QIcon(SCRIPTDIR+os.path.sep+'logo.png'))

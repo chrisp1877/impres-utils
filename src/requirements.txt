@@ -1,2 +1,5 @@
 pathlib
 PyQt5
+Pillow
+lxml
+docx
