@@ -1,4 +1,5 @@
 # TODO: Invesetigate why AWS 62, e4 doesn't work being imported
+#TODO Handle crash when image is selected before demo (tries to read .res of demo which doesnt exist yet)
 
 from window.window import ImpresysApplication
 
@@ -15,7 +16,6 @@ def main():
         "BG_PATH": r"C:\\Users\\\Jess\Pictures\hover.png",
         "SHELL_PATH": None,
         "ASSET_NEW_SIZE": (300, 800),
-        "ASSET_NEW_COORD": (600, 100),
         "SHELL_NEW_SIZE": (1500, 750),
         "SHELL_NEW_COORD": (200, 50),
         "ASSET_NEW_COORD": (600, 100),

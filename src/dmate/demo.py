@@ -406,8 +406,8 @@ class Demo:
         print(f"ASSET NEW SIZE: {asset_new_size}")
         print(f"ASSET NEW COORD: {asset_new_coord}")
 
-        if exceeds_res(bound(asset_new_size, asset_new_coord)):
-            raise Exception("Resized and relocated image beyond original boundaries")
+        #if exceeds_res(bound(asset_new_size, asset_new_coord)):
+            # raise Exception("Resized and relocated image beyond original boundaries")
         if any(i < 0 for i in asset_new_coord + asset_new_size):
             raise Exception("Negative values passed for bg dims")
 
@@ -466,12 +466,18 @@ class Demo:
         sections = [s.lower() for s in to_sect]
         fg_img = fg_img_obj
         for sect_i, sect in enumerate(self):
-            if to_sect == [] or sect.title in to_sect:
-                for img in step.assets.glob("*.png"):
-                    curr_img = fg_img.copy()
-                    asset = Image.open(img)
-                    asset_resize = asset.resize(fg_img_size, Image.ANTIALIAS)
-                    curr_img.paste(asset_resize, fg_img_coord, asset_resize.convert('RGBA'))
+            if to_sect == [] or sect.title.lower() in sections:
+                for step_i, step in enumerate(sect.steps):
+                    for img in step.assets.glob("*.png"):
+                        curr_img = fg_img.copy()
+                        asset = Image.open(img)
+                        curr_img_resize = curr_img.resize(fg_img_size, Image.ANTIALIAS)
+                        asset.paste(curr_img_resize, fg_img_coord, curr_img.convert('RGBA'))
+                        curr_img.save(str(img))
+                        if dt.DEBUG:
+                            print(f"INSERTED: {img}")
+                            print(f"FINISHED: Section {sect_i}, step {step_i}")
+                        
 
     def clear_talking_points(self, i: int):
         pass

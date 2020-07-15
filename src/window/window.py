@@ -838,15 +838,17 @@ class ImpresysWindow(QMainWindow):
         fileName, _ = QFileDialog.getOpenFileName(self,"Browse for image files", "","All Files (*);;PNG files (*.png)", options=options)
         if fileName:
             print(fileName)
-        img_tmp = Image.open(fileName)
-        iwidth, iheight = img_tmp.size
-        self.img_tbox1.setText(fileName)
-        self.img_tbox2.setText(fileName)
-        self.shsizex.setText(str(iwidth))
-        self.shsizey.setText(str(iheight))
-        self.inssizex.setText(str(iwidth))
-        self.inssizey.setText(str(iheight))
-        self.IMG_PATH = fileName
+            img_tmp = Image.open(fileName)
+            iwidth, iheight = img_tmp.size
+            self.img_tbox1.setText(fileName)
+            self.img_tbox2.setText(fileName)
+            if self.demo is not None:
+                if iwidth > self.demo.res[0] or iheight > self.demo.res[1]:
+                    self.shsizex.setText(str(iwidth))
+                    self.shsizey.setText(str(iheight))
+            self.inssizex.setText(str(iwidth))
+            self.inssizey.setText(str(iheight))
+            self.IMG_PATH = fileName
 
     # FOR SECOND SHELL, I.E. IF EXTRA_ON=TRUE
     def browse_shell(self, tbox):
@@ -855,14 +857,14 @@ class ImpresysWindow(QMainWindow):
         fileName, _ = QFileDialog.getOpenFileName(self,"Browse for image files", "","All Files (*);;PNG files (*.png)", options=options)
         if fileName:
             print(fileName)
-        img_tmp = Image.open(fileName)
-        iwidth, iheight = img_tmp.size
-        self.s_shsizex.setText(str(int(iwidth)))
-        self.s_shsizey.setText(str(int(iheight)))
-        self.s_shlocx.setText(str(int((1920-iwidth)/2)))
-        self.s_shlocy.setText(str(int((1080-iheight)/2)))
-        self.shell_img_tbox.setText(fileName)
-        self.SHELL_PATH = fileName
+            img_tmp = Image.open(fileName)
+            iwidth, iheight = img_tmp.size
+            self.s_shsizex.setText(str(int(iwidth)))
+            self.s_shsizey.setText(str(int(iheight)))
+            self.s_shlocx.setText(str(int((1920-iwidth)/2)))
+            self.s_shlocy.setText(str(int((1080-iheight)/2)))
+            self.shell_img_tbox.setText(fileName)
+            self.SHELL_PATH = fileName
 
     @pyqtSlot()
     def shell_submit(self):
@@ -912,14 +914,14 @@ class ImpresysWindow(QMainWindow):
 
     @pyqtSlot()
     def ins_submit(self):
-        demo_dir = self.demo_tbox2.text()
+        demo_dir = self.DEMO_PATH
         fg_img_dir = self.img_tbox2.text()
         fg_img_loc = None
         fg_img_size = None
         to_ins = [s.strip() for s in self.ins_sects_sel.text().split(',')]
         if ((len(self.inslocx.text()) > 0 and len(self.inslocy.text()) > 0) and
            (len(self.inssizex.text()) > 0 and len(self.inssizey.text()) > 0)):
-            fg_img_loc = (int(self.inslocx.text()), int(self.inslocy.text()))
+            fg_img_loc = (int(self.inslocx.text()), int(self.inslocy.text())) # TODO Autofill loc fields with 0,0 when loading img
             fg_img_size = (int(self.inssizex.text()), int(self.inssizey.text()))
         print(demo_dir, fg_img_dir, fg_img_loc, fg_img_size)
         self.statusbar.showMessage("Beginning insertion...")
