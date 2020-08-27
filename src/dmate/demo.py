@@ -435,21 +435,22 @@ class Demo:
         if dt.DEBUG: print("right before for loop")
         print(len(self.sections))
         for sect_i, sect in enumerate(self.sections):
-            if sections == [] or sect.title.lower() in sections:
+            #if sections == [] or sect.title.lower() in sections:
                 for step_i, step in enumerate(sect.steps):
                     if dt.DEBUG: 
                         print(f"STARTING SHELLING: Sect {sect_i}, step {step_i}")
                     #self.transform_coords(step_idx=step_i, sect_idx=sect_i, scale=(rx, ry), offset=(asset_new_coord))
                     step.transform_coords(scale=(rx, ry), offset=(offset_x, offset_y))
-                    for img in step.assets.glob("*.Png"):
-                        curr_img = bg_img.copy()
-                        asset = Image.open(img)
-                        asset_resize = asset.resize(asset_new_size, Image.ANTIALIAS)
-                        curr_img.paste(asset_resize, asset_new_coord, asset_resize.convert('RGBA'))
-                        curr_img.save(str(img))
-                        if dt.DEBUG:
-                            print(f"SHELLED: {img}")
-                            print(f"FINISHED: Section {sect_i}, step {step_i}")
+                    for img in [step.img, step.hover]:
+                        if img is not None:
+                            curr_img = bg_img.copy()
+                            asset = Image.open(str(img))
+                            asset_resize = asset.resize(asset_new_size, Image.ANTIALIAS)
+                            curr_img.paste(asset_resize, asset_new_coord, asset_resize.convert('RGBA'))
+                            curr_img.save(str(img))
+                            if dt.DEBUG:
+                                print(f"SHELLED: {img}")
+                                print(f"FINISHED: Section {sect_i}, step {step_i}")
         if dt.DEBUG: print(self.res)
         self.write(self.file)
         
@@ -466,17 +467,18 @@ class Demo:
         sections = [s.lower() for s in to_sect]
         fg_img = fg_img_obj
         for sect_i, sect in enumerate(self):
-            if to_sect == [] or sect.title.lower() in sections:
+            # if to_sect == [] or sect.title.lower() in sections:
                 for step_i, step in enumerate(sect.steps):
-                    for img in step.assets.glob("*.png"):
-                        curr_img = fg_img.copy()
-                        asset = Image.open(img)
-                        curr_img_resize = curr_img.resize(fg_img_size, Image.ANTIALIAS)
-                        asset.paste(curr_img_resize, fg_img_coord, curr_img.convert('RGBA'))
-                        curr_img.save(str(img))
-                        if dt.DEBUG:
-                            print(f"INSERTED: {img}")
-                            print(f"FINISHED: Section {sect_i}, step {step_i}")
+                    for img in [step.img, step.hover]:
+                        if img is not None:
+                            curr_img = fg_img.copy()
+                            asset = Image.open(str(img))
+                            curr_img_resize = curr_img.resize(fg_img_size, Image.ANTIALIAS)
+                            asset.paste(curr_img_resize, fg_img_coord, curr_img.convert('RGBA'))
+                            curr_img.save(str(img))
+                            if dt.DEBUG:
+                                print(f"INSERTED: {str(img)}")
+                                print(f"FINISHED: Section {sect_i}, step {step_i}")
                         
 
     def clear_talking_points(self, i: int):

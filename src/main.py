@@ -27,3 +27,4 @@ def main():
 if __name__ == "__main__":
     main()
 
+# TODO Change shell separate mode so that it goes through a round of shelling just with bg then inserts the shelling image over the bg + asset combined
